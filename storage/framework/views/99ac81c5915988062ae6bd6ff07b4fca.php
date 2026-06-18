@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>EventHub | Admin Dashboard</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -480,66 +480,66 @@
 <aside class="sidebar" id="sidebar">
     <div class="logo"><h1><span class="logo-icon"><i class="fas fa-calendar-check"></i></span><span>EventHub</span></h1><button class="sidebar-toggle-btn" id="sidebarCloseBtn"><i class="fas fa-chevron-left"></i></button></div>
     <ul class="nav-menu">
-        <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link"><span class="nav-icon"><i class="fas fa-chart-pie"></i></span><span>Dashboard</span></a></li>
+        <li class="nav-item"><a href="<?php echo e(route('admin.dashboard')); ?>" class="nav-link"><span class="nav-icon"><i class="fas fa-chart-pie"></i></span><span>Dashboard</span></a></li>
         <li class="nav-item">
             <a href="#" onclick="openQRScanner()" class="nav-link">
                 <span class="nav-icon"><i class="fas fa-qrcode"></i></span>
                 <span>Scan QR Code</span>
             </a>
         </li>
-        <li class="nav-item"><a href="{{ route('admin.events.index') }}" class="nav-link active"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span><span>Events</span></a></li>
-        @if(auth('admin')->check() && auth('admin')->user()->hasRole('super_admin'))
-        <li class="nav-item"><a href="{{ route('admin.admins.index') }}" class="nav-link"><span class="nav-icon"><i class="fas fa-user-shield"></i></span><span>Admins</span></a></li>
-        <li class="nav-item"><a href="{{ route('admin.users.index') }}" class="nav-link"><span class="nav-icon"><i class="fas fa-users"></i></span><span>Users</span></a></li>
-        @endif
+        <li class="nav-item"><a href="<?php echo e(route('admin.events.index')); ?>" class="nav-link active"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span><span>Events</span></a></li>
+        <?php if(auth('admin')->check() && auth('admin')->user()->hasRole('super_admin')): ?>
+        <li class="nav-item"><a href="<?php echo e(route('admin.admins.index')); ?>" class="nav-link"><span class="nav-icon"><i class="fas fa-user-shield"></i></span><span>Admins</span></a></li>
+        <li class="nav-item"><a href="<?php echo e(route('admin.users.index')); ?>" class="nav-link"><span class="nav-icon"><i class="fas fa-users"></i></span><span>Users</span></a></li>
+        <?php endif; ?>
     </ul>
 </aside>
 
 <main class="main-content" id="mainContent">
-    @php
+    <?php
         $adminUser = auth('admin')->user();
         $isSuper = $adminUser->hasRole('super_admin');
         $canViewMessages = $isSuper || $adminUser->hasPermissionTo('view_messages');
         $canViewReviews = $isSuper || $adminUser->hasPermissionTo('view_reviews');
         $canDeleteReviews = $isSuper || $adminUser->hasPermissionTo('delete_reviews');
         $canDeleteMessages = $isSuper || $adminUser->hasPermissionTo('delete_messages');
-    @endphp
+    ?>
     <div class="topbar">
-        <div class="topbar-left"><h2>Events</h2><div class="breadcrumb"><a href="{{ route('admin.dashboard') }}"><i class="fas fa-home"></i> Home</a> / Events</div></div>
+        <div class="topbar-left"><h2>Events</h2><div class="breadcrumb"><a href="<?php echo e(route('admin.dashboard')); ?>"><i class="fas fa-home"></i> Home</a> / Events</div></div>
         <div class="topbar-right">
             <button class="btn-create" data-bs-toggle="modal" data-bs-target="#createEventModal"><i class="fas fa-plus-circle"></i>Create Event</button>
-            <button class="btn-messages-top" onclick="if(!this.disabled){loadAllMessages(); messagesModal.show();}" {{ $canViewMessages ? '' : 'disabled' }} title="{{ $canViewMessages ? 'View all messages' : 'You don\'t have permission to view messages' }}"><i class="fas fa-envelope"></i> All Messages</button>
+            <button class="btn-messages-top" onclick="if(!this.disabled){loadAllMessages(); messagesModal.show();}" <?php echo e($canViewMessages ? '' : 'disabled'); ?> title="<?php echo e($canViewMessages ? 'View all messages' : 'You don\'t have permission to view messages'); ?>"><i class="fas fa-envelope"></i> All Messages</button>
             <div class="user-info">
-                <div class="user-avatar">{{ strtoupper(substr($adminUser->name ?? 'AD', 0, 2)) }}</div>
-                <div class="user-details"><span class="user-name">{{ $adminUser->name ?? 'Admin' }}</span><span class="user-role">{{ $isSuper ? 'Super Admin' : ($adminUser->getRoleNames()->first() ?? 'Admin') }}</span></div>
+                <div class="user-avatar"><?php echo e(strtoupper(substr($adminUser->name ?? 'AD', 0, 2))); ?></div>
+                <div class="user-details"><span class="user-name"><?php echo e($adminUser->name ?? 'Admin'); ?></span><span class="user-role"><?php echo e($isSuper ? 'Super Admin' : ($adminUser->getRoleNames()->first() ?? 'Admin')); ?></span></div>
             </div>
-            <form method="POST" action="{{ route('admin.logout') }}" style="margin:0;">@csrf<button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button></form>
+            <form method="POST" action="<?php echo e(route('admin.logout')); ?>" style="margin:0;"><?php echo csrf_field(); ?><button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button></form>
         </div>
     </div>
 
     <div class="content-area">
-        @if(session('success'))<div style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;padding:14px 20px;border-radius:14px;margin-bottom:24px;"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>@endif
-        @if(session('error'))<div style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:14px 20px;border-radius:14px;margin-bottom:24px;"><i class="fas fa-exclamation-circle"></i> {{ session('error') }}</div>@endif
+        <?php if(session('success')): ?><div style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7;padding:14px 20px;border-radius:14px;margin-bottom:24px;"><i class="fas fa-check-circle"></i> <?php echo e(session('success')); ?></div><?php endif; ?>
+        <?php if(session('error')): ?><div style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:14px 20px;border-radius:14px;margin-bottom:24px;"><i class="fas fa-exclamation-circle"></i> <?php echo e(session('error')); ?></div><?php endif; ?>
 
         <div class="stats-row">
             <div class="stat-card blue">
                 <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-                <div class="stat-value">{{ $stats['totalEvents'] ?? $events->total() }}</div>
+                <div class="stat-value"><?php echo e($stats['totalEvents'] ?? $events->total()); ?></div>
                 <div class="stat-label">Total Events</div>
             </div>
             <div class="stat-card green">
                 <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-value">{{ $stats['totalRegistrations'] ?? 0 }}</div>
+                <div class="stat-value"><?php echo e($stats['totalRegistrations'] ?? 0); ?></div>
                 <div class="stat-label">Total Registrations</div>
             </div>
             <div class="stat-card orange">
                 <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
-                <div class="stat-value">{{ $stats['upcomingEvents'] ?? 0 }}</div>
+                <div class="stat-value"><?php echo e($stats['upcomingEvents'] ?? 0); ?></div>
                 <div class="stat-label">Upcoming Events</div>
             </div>
             <div class="stat-card purple">
                 <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
-                <div class="stat-value">${{ number_format($stats['totalRevenue'] ?? 0, 2) }}</div>
+                <div class="stat-value">$<?php echo e(number_format($stats['totalRevenue'] ?? 0, 2)); ?></div>
                 <div class="stat-label">Revenue</div>
             </div>
         </div>
@@ -550,34 +550,34 @@
                 <table class="custom-table">
                     <thead><tr><th>ID</th><th>Event</th><th>Date & Time</th><th>Location</th><th>Price</th><th>Registrations</th><th>Actions</th></tr></thead>
                     <tbody id="eventsTableBody">
-                        @forelse($events as $event)
-                        <tr class="event-row" data-name="{{ strtolower($event->title) }}" data-location="{{ strtolower($event->location) }}">
-                            <td><strong style="color:#a78bfa;">#{{ $event->id }}</strong></td>
-                            <td><strong>{{ $event->title }}</strong><br><small class="text-muted">{{ Str::limit($event->description, 40) }}</small></td>
-                            <td>{{ \Carbon\Carbon::parse($event->event_date)->format('M d, Y') }}<br><small>{{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('g:i A') }}</small></td>
-                            <td><i class="fas fa-map-marker-alt" style="color:#f87171;"></i> {{ $event->location }}</td>
-                            <td>@if($event->price > 0)<span class="badge paid">${{ number_format($event->price, 2) }}</span>@else<span class="badge free">Free</span>@endif</td>
-                            <td><span class="badge-reg"><i class="fas fa-users"></i> {{ $event->users_count ?? 0 }}</span></td>
+                        <?php $__empty_1 = true; $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <tr class="event-row" data-name="<?php echo e(strtolower($event->title)); ?>" data-location="<?php echo e(strtolower($event->location)); ?>">
+                            <td><strong style="color:#a78bfa;">#<?php echo e($event->id); ?></strong></td>
+                            <td><strong><?php echo e($event->title); ?></strong><br><small class="text-muted"><?php echo e(Str::limit($event->description, 40)); ?></small></td>
+                            <td><?php echo e(\Carbon\Carbon::parse($event->event_date)->format('M d, Y')); ?><br><small><?php echo e(\Carbon\Carbon::parse($event->start_time)->format('g:i A')); ?> - <?php echo e(\Carbon\Carbon::parse($event->end_time)->format('g:i A')); ?></small></td>
+                            <td><i class="fas fa-map-marker-alt" style="color:#f87171;"></i> <?php echo e($event->location); ?></td>
+                            <td><?php if($event->price > 0): ?><span class="badge paid">$<?php echo e(number_format($event->price, 2)); ?></span><?php else: ?><span class="badge free">Free</span><?php endif; ?></td>
+                            <td><span class="badge-reg"><i class="fas fa-users"></i> <?php echo e($event->users_count ?? 0); ?></span></td>
                             <td>
-                                <button class="btn-sm btn-view view-btn" data-event-id="{{ $event->id }}" data-event-title="{{ $event->title }}"><i class="fas fa-eye"></i> View</button>
-                                <button class="btn-sm btn-edit edit-btn" data-event-id="{{ $event->id }}" data-title="{{ $event->title }}" data-description="{{ $event->description }}" data-date="{{ $event->event_date }}" data-start-time="{{ $event->start_time }}" data-end-time="{{ $event->end_time }}" data-price="{{ $event->price }}" data-location="{{ $event->location }}"><i class="fas fa-edit"></i> Edit</button>
-                                <button class="btn-sm btn-review review-btn" data-event-id="{{ $event->id }}" data-event-title="{{ $event->title }}" {{ $canViewReviews ? '' : 'disabled' }} title="{{ $canViewReviews ? 'View reviews' : 'You don\'t have permission to view reviews' }}"><i class="fas fa-star"></i> Reviews</button>
-                                <button class="btn-sm btn-delete delete-btn" data-event-id="{{ $event->id }}" data-event-title="{{ $event->title }}"><i class="fas fa-trash"></i> Delete</button>
+                                <button class="btn-sm btn-view view-btn" data-event-id="<?php echo e($event->id); ?>" data-event-title="<?php echo e($event->title); ?>"><i class="fas fa-eye"></i> View</button>
+                                <button class="btn-sm btn-edit edit-btn" data-event-id="<?php echo e($event->id); ?>" data-title="<?php echo e($event->title); ?>" data-description="<?php echo e($event->description); ?>" data-date="<?php echo e($event->event_date); ?>" data-start-time="<?php echo e($event->start_time); ?>" data-end-time="<?php echo e($event->end_time); ?>" data-price="<?php echo e($event->price); ?>" data-location="<?php echo e($event->location); ?>"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn-sm btn-review review-btn" data-event-id="<?php echo e($event->id); ?>" data-event-title="<?php echo e($event->title); ?>" <?php echo e($canViewReviews ? '' : 'disabled'); ?> title="<?php echo e($canViewReviews ? 'View reviews' : 'You don\'t have permission to view reviews'); ?>"><i class="fas fa-star"></i> Reviews</button>
+                                <button class="btn-sm btn-delete delete-btn" data-event-id="<?php echo e($event->id); ?>" data-event-title="<?php echo e($event->title); ?>"><i class="fas fa-trash"></i> Delete</button>
                             </td>
                         </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr><td colspan="7"><div class="empty-state"><i class="fas fa-calendar-times" style="font-size:40px;"></i><p>No events found.</p></div></td></tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
-            @if($events->hasPages())<div style="padding:16px 24px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:center;">{{ $events->links() }}</div>@endif
+            <?php if($events->hasPages()): ?><div style="padding:16px 24px;border-top:1px solid rgba(255,255,255,0.05);display:flex;justify-content:center;"><?php echo e($events->links()); ?></div><?php endif; ?>
         </div>
     </div>
 </main>
 
 <!-- CREATE EVENT MODAL -->
-<div class="modal fade" id="createEventModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5><i class="fas fa-plus-circle me-2"></i>Create New Event</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data">@csrf<div class="modal-body"><div class="mb-3"><label class="form-label">Event Title <span class="text-danger">*</span></label><input type="text" name="title" class="form-control" required></div><div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="4"></textarea></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Event Date <span class="text-danger">*</span></label><input type="date" name="event_date" class="form-control" required></div><div class="col-md-6"><label class="form-label">Location</label><input type="text" name="location" class="form-control"></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Start Time</label><input type="time" name="start_time" class="form-control"></div><div class="col-md-6"><label class="form-label">End Time</label><input type="time" name="end_time" class="form-control"></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Price ($)</label><input type="number" step="0.01" name="price" class="form-control" value="0"></div><div class="col-md-6"><label class="form-label">Event Images</label><input type="file" name="images[]" class="form-control" multiple></div></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Create Event</button></div></form></div></div></div>
+<div class="modal fade" id="createEventModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5><i class="fas fa-plus-circle me-2"></i>Create New Event</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><form action="<?php echo e(route('admin.events.store')); ?>" method="POST" enctype="multipart/form-data"><?php echo csrf_field(); ?><div class="modal-body"><div class="mb-3"><label class="form-label">Event Title <span class="text-danger">*</span></label><input type="text" name="title" class="form-control" required></div><div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="4"></textarea></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Event Date <span class="text-danger">*</span></label><input type="date" name="event_date" class="form-control" required></div><div class="col-md-6"><label class="form-label">Location</label><input type="text" name="location" class="form-control"></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Start Time</label><input type="time" name="start_time" class="form-control"></div><div class="col-md-6"><label class="form-label">End Time</label><input type="time" name="end_time" class="form-control"></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Price ($)</label><input type="number" step="0.01" name="price" class="form-control" value="0"></div><div class="col-md-6"><label class="form-label">Event Images</label><input type="file" name="images[]" class="form-control" multiple></div></div></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Create Event</button></div></form></div></div></div>
 
 <!-- EDIT EVENT MODAL -->
 <div class="modal fade" id="editEventModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5><i class="fas fa-edit me-2"></i>Edit Event</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="editEventForm"><input type="hidden" id="editId"><div class="mb-3"><label class="form-label">Title</label><input type="text" id="editTitle" class="form-control"></div><div class="mb-3"><label class="form-label">Description</label><textarea id="editDescription" class="form-control" rows="3"></textarea></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Date</label><input type="date" id="editDate" class="form-control"></div><div class="col-md-6"><label class="form-label">Location</label><input type="text" id="editLocation" class="form-control"></div></div><div class="row mb-3"><div class="col-md-6"><label class="form-label">Start Time</label><input type="time" id="editStartTime" class="form-control"></div><div class="col-md-6"><label class="form-label">End Time</label><input type="time" id="editEndTime" class="form-control"></div></div><div class="mb-3"><label class="form-label">Price ($)</label><input type="number" step="0.01" id="editPrice" class="form-control"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" id="saveEditBtn">Save Changes</button></div></div></div></div>
@@ -723,7 +723,7 @@
     window.addEventListener('resize', handleResize); handleResize();
     function filterEvents() { const q = document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('.event-row').forEach(row => { const name = row.dataset.name || '', loc = row.dataset.location || ''; row.style.display = (name.includes(q) || loc.includes(q)) ? '' : 'none'; }); }
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>';
     const attModal = new bootstrap.Modal(document.getElementById('attendeesModal'));
     const editModal = new bootstrap.Modal(document.getElementById('editEventModal'));
     const reviewsModal = new bootstrap.Modal(document.getElementById('reviewsModal'));
@@ -731,8 +731,8 @@
     const replyModal = new bootstrap.Modal(document.getElementById('replyMessageModal'));
     const viewModal = new bootstrap.Modal(document.getElementById('viewEventModal'));
 
-    const canDeleteReview = {{ $canDeleteReviews ? 'true' : 'false' }};
-    const canDeleteMessage = {{ $canDeleteMessages ? 'true' : 'false' }};
+    const canDeleteReview = <?php echo e($canDeleteReviews ? 'true' : 'false'); ?>;
+    const canDeleteMessage = <?php echo e($canDeleteMessages ? 'true' : 'false'); ?>;
     let currentReplyData = null;
 
     function getStars(rating) { let html = ''; for (let i = 1; i <= 5; i++) { if (i <= Math.floor(rating)) html += '<i class="fas fa-star"></i>'; else if (i - 0.5 <= rating) html += '<i class="fas fa-star-half-alt"></i>'; else html += '<i class="far fa-star"></i>'; } return html; }
@@ -1366,4 +1366,4 @@
     window.viewEventDetails = viewEventDetails;
 </script>
 </body>
-</html>
+</html><?php /**PATH C:\Users\User\backend\resources\views/admin/events/index.blade.php ENDPATH**/ ?>

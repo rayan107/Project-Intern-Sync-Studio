@@ -45,6 +45,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Reports (optional)
             'view_reports',
+
+            // QR Scanner (NEW)
+            'scan_qr_codes',
         ];
 
         foreach ($permissions as $permission) {
@@ -82,10 +85,10 @@ class RolesAndPermissionsSeeder extends Seeder
         // Assign Permissions
         // =========================
 
-        // Super Admin - ALL permissions
+        // Super Admin - ALL permissions (including scan_qr_codes)
         $superAdmin->givePermissionTo(Permission::all());
 
-        // Manager - Can manage events, users, view reviews & messages
+        // Manager - Can manage events, users, view reviews & messages, AND scan QR codes
         $manager->givePermissionTo([
             'view_dashboard',
             'view_events',
@@ -99,9 +102,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'view_messages',
             'delete_messages',
             'view_reports',
+            'scan_qr_codes', // NEW
         ]);
 
-        // Events Manager - Can manage events, view reviews & messages
+        // Events Manager - Can manage events, view reviews & messages, AND scan QR codes
         $eventsManager->givePermissionTo([
             'view_dashboard',
             'view_events',
@@ -113,9 +117,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'view_messages',
             'delete_messages',
             'view_reports',
+            'scan_qr_codes', 
         ]);
 
-        // Viewer - Read-only access
+        // Viewer - Read-only access, NO scan_qr_codes permission
         $viewer->givePermissionTo([
             'view_dashboard',
             'view_events',
@@ -123,6 +128,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view_reviews',
             'view_messages',
             'view_reports',
+            // 'scan_qr_codes' - NOT given to viewers
         ]);
     }
 }

@@ -13,6 +13,195 @@ use App\Http\Controllers\Admin\ResetPasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\UserAuthController;
+use App\Models\Event;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
+
+// ============================================
+// QR CODE CHECKIN ROUTE (MUST BE FIRST!)
+// ============================================
+Route::get('/checkin/{token}', function ($token) {
+    $parts = explode('_', $token);
+    
+    if (count($parts) < 2) {
+        return view('checkin-result', [
+            'success' => false,
+            'message' => '❌ Invalid QR Code format'
+        ]);
+    }
+    
+    $userId = $parts[0];
+    $eventId = $parts[1];
+    
+    $user = User::find($userId);
+    $event = Event::find($eventId);
+    
+    if (!$user || !$event) {
+        return view('checkin-result', [
+            'success' => false,
+            'message' => '❌ User or Event not found'
+        ]);
+    }
+    
+    // Check if user is registered for this event
+    $isRegistered = false;
+    $tableName = null;
+    
+    // Check all possible tables
+    if (Schema::hasTable('event_user')) {
+        $tableName = 'event_user';
+        $isRegistered = DB::table('event_user')
+            ->where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->exists();
+    } elseif (Schema::hasTable('event_registrations')) {
+        $tableName = 'event_registrations';
+        $isRegistered = DB::table('event_registrations')
+            ->where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->exists();
+    } elseif (Schema::hasTable('registrations')) {
+        $tableName = 'registrations';
+        $isRegistered = DB::table('registrations')
+            ->where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->exists();
+    }
+    
+    if ($isRegistered) {
+        // Get current time in Lebanon timezone
+        $checkinTime = Carbon::now('Asia/Beirut');
+        
+        // Update check-in time
+        try {
+            if ($tableName && Schema::hasColumn($tableName, 'checked_in_at')) {
+                DB::table($tableName)
+                    ->where('user_id', $userId)
+                    ->where('event_id', $eventId)
+                    ->update([
+                        'checked_in_at' => $checkinTime,
+                        'status' => 'present'
+                    ]);
+            } else {
+                // If column doesn't exist, try to add it
+                try {
+                    Schema::table($tableName, function ($table) {
+                        $table->timestamp('checked_in_at')->nullable();
+                        $table->string('status')->default('registered');
+                    });
+                    
+                    // Update again after adding column
+                    DB::table($tableName)
+                        ->where('user_id', $userId)
+                        ->where('event_id', $eventId)
+                        ->update([
+                            'checked_in_at' => $checkinTime,
+                            'status' => 'present'
+                        ]);
+                } catch (\Exception $e) {
+                    // Ignore
+                }
+            }
+        } catch (\Exception $e) {
+            // Ignore errors
+        }
+        
+        return view('checkin-result', [
+            'success' => true,
+            'message' => '✅ Check-in Successful!',
+            'user' => $user,
+            'event' => $event,
+            'checkin_time' => $checkinTime,
+        ]);
+    } else {
+        return view('checkin-result', [
+            'success' => false,
+            'message' => '❌ User is not registered for this event. Please register first.',
+            'user' => $user,
+            'event' => $event,
+        ]);
+    }
+})->name('checkin');
+
+// API endpoint for JSON verification
+Route::get('/api/checkin/{token}', function ($token) {
+    $parts = explode('_', $token);
+    
+    if (count($parts) < 2) {
+        return response()->json(['success' => false, 'message' => 'Invalid QR code'], 400);
+    }
+    
+    $userId = $parts[0];
+    $eventId = $parts[1];
+    
+    $user = User::find($userId);
+    $event = Event::find($eventId);
+    
+    if (!$user || !$event) {
+        return response()->json(['success' => false, 'message' => 'User or event not found'], 404);
+    }
+    
+    $isRegistered = false;
+    $tableName = null;
+    
+    if (Schema::hasTable('event_user')) {
+        $tableName = 'event_user';
+        $isRegistered = DB::table('event_user')
+            ->where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->exists();
+    } elseif (Schema::hasTable('event_registrations')) {
+        $tableName = 'event_registrations';
+        $isRegistered = DB::table('event_registrations')
+            ->where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->exists();
+    } elseif (Schema::hasTable('registrations')) {
+        $tableName = 'registrations';
+        $isRegistered = DB::table('registrations')
+            ->where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->exists();
+    }
+    
+    if ($isRegistered) {
+        // Get current time in Lebanon timezone
+        $checkinTime = Carbon::now('Asia/Beirut');
+        
+        // Update check-in time for API
+        try {
+            if ($tableName && Schema::hasColumn($tableName, 'checked_in_at')) {
+                DB::table($tableName)
+                    ->where('user_id', $userId)
+                    ->where('event_id', $eventId)
+                    ->update([
+                        'checked_in_at' => $checkinTime,
+                        'status' => 'present'
+                    ]);
+            }
+        } catch (\Exception $e) {
+            // Ignore
+        }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Check-in successful',
+            'user' => ['id' => $user->id, 'name' => $user->name, 'email' => $user->email],
+            'event' => ['id' => $event->id, 'title' => $event->title, 'date' => $event->event_date],
+            'checked_in_at' => $checkinTime->toISOString()
+        ]);
+    } else {
+        return response()->json(['success' => false, 'message' => 'User not registered for this event'], 403);
+    }
+});
+
+// Scan page
+Route::get('/scan', function () {
+    return view('admin.scan');
+})->name('admin.scan')->middleware('auth:admin');
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +225,8 @@ Route::get('/notifications', [NotificationController::class, 'index']);
 Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
 
-// ============ FAVORITE ROUTES (NO AUTH MIDDLEWARE) ============
-Route::post('/events/{event}/favorite', [FavoriteController::class, 'toggle'])
-    ->name('events.favorite');
+// ============ FAVORITE ROUTES ============
+Route::post('/events/{event}/favorite', [FavoriteController::class, 'toggle'])->name('events.favorite');
 Route::get('/api/user/favorites', [FavoriteController::class, 'getUserFavorites']);
 
 /*
@@ -46,14 +234,10 @@ Route::get('/api/user/favorites', [FavoriteController::class, 'getUserFavorites'
 | ADMIN FORGOT / RESET PASSWORD
 |--------------------------------------------------------------------------
 */
-Route::get('/admin/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])
-    ->name('admin.password.request');
-Route::post('/admin/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])
-    ->name('admin.password.email');
-Route::get('/admin/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('admin.password.reset');
-Route::post('/admin/reset-password', [ResetPasswordController::class, 'resetPassword'])
-    ->name('admin.password.update');
+Route::get('/admin/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('admin.password.request');
+Route::post('/admin/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('admin.password.email');
+Route::get('/admin/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('admin.password.reset');
+Route::post('/admin/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('admin.password.update');
 
 /*
 |--------------------------------------------------------------------------
@@ -75,7 +259,7 @@ Route::prefix('admin')
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-        // Events
+        // ============ EVENTS ============
         Route::get('/events', [EventController::class, 'index'])->name('events.index');
         Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
         Route::post('/events', [EventController::class, 'store'])->name('events.store');
@@ -83,35 +267,35 @@ Route::prefix('admin')
         Route::delete('/events/{id}', [EventController::class, 'destroy'])->name('events.destroy');
         Route::get('/events/{event}/registrations', [EventController::class, 'registrations'])->name('events.registrations');
         Route::get('/events/{id}/images', [EventController::class, 'getImages'])->name('events.images');
+        Route::get('/events/{id}/details', [EventController::class, 'getEventDetails'])->name('events.details');
 
-        // Reviews (admin)
+        // ============ REVIEWS (admin) ============
         Route::get('/events/{event}/reviews', [ReviewController::class, 'index'])->name('events.reviews');
         Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
 
-        // Messages (admin)
+        // ============ MESSAGES (admin) ============
         Route::get('/events/{event}/messages', [MessageController::class, 'eventMessages'])->name('events.messages');
         Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
         Route::get('/messages', [MessageController::class, 'allMessages'])->name('messages.all');
         Route::post('/messages/reply', [MessageController::class, 'reply'])->name('messages.reply');
         
-        // Notifications from admin
+        // ============ NOTIFICATIONS (admin) ============
         Route::post('/notify', [NotificationController::class, 'storeFromAdmin'])->name('admin.notify');
 
-        // Users
+        // ============ USERS (admin) ============
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
         Route::delete('/users/{user}/events/{event}', [UserController::class, 'unregisterEvent'])->name('users.unregisterEvent');
 
-        // Admins
+        // ============ ADMINS (admin) ============
         Route::get('/admins', [AdminController::class, 'index'])->name('admins.index');
         Route::post('/admins', [AdminController::class, 'store'])->name('admins.store');
         Route::put('/admins/{id}', [AdminController::class, 'update'])->name('admins.update');
         Route::put('/admins/{id}/permissions', [AdminController::class, 'updatePermissions'])->name('admins.permissions');
         Route::delete('/admins/{id}', [AdminController::class, 'destroy'])->name('admins.destroy');
         Route::get('/admins/{id}/edit', [AdminController::class, 'edit'])->name('admins.edit');
-Route::get('/admins/{id}/permissions', [AdminController::class, 'getPermissions'])->name('admins.getPermissions');
-Route::get('/admin/events/{event}/registrations', [EventController::class, 'getRegistrations'])->name('admin.events.registrations');
+        Route::get('/admins/{id}/permissions', [AdminController::class, 'getPermissions'])->name('admins.getPermissions');
     });
 
 /*
@@ -148,6 +332,7 @@ Route::get('/api/events/attendees-count', function() {
     ]);
 });
 
+// ============ LANGUAGE SWITCH ============
 Route::post('/switch-language/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'ar', 'fr'])) {
         session(['locale' => $locale]);
@@ -155,6 +340,16 @@ Route::post('/switch-language/{locale}', function ($locale) {
     }
     return response()->json(['success' => true]);
 })->name('language.switch');
+
+// ============ TEST ROUTE ============
+Route::get('/test-time', function() {
+    return response()->json([
+        'utc' => now(),
+        'beirut' => Carbon::now('Asia/Beirut'),
+        'database' => DB::select('SELECT NOW() as now')
+    ]);
+});
+
 /*
 |--------------------------------------------------------------------------
 | FALLBACK - MUST BE LAST!

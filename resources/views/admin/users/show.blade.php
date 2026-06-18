@@ -13,7 +13,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --sidebar-width: 280px;
             --bg-dark: #0f172a;
             --surface-glass: rgba(255, 255, 255, 0.05);
             --border-glass: rgba(255, 255, 255, 0.1);
@@ -29,7 +28,6 @@
                         radial-gradient(circle at 80% 70%, #818cf815 0%, transparent 40%),
                         linear-gradient(145deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
             min-height: 100vh;
-            display: flex;
             position: relative;
             color: var(--text-light);
         }
@@ -54,149 +52,13 @@
         @keyframes float2 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(60px,-40px) scale(1.3); } }
         @keyframes float3 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-40px,-60px) scale(1.1); } }
 
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-right: 1px solid var(--border-glass);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 1000;
-            transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            box-shadow: 4px 0 30px rgba(0, 0, 0, 0.4);
-        }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.mobile-open { transform: translateX(0); }
-        }
-        @media (min-width: 769px) {
-            .sidebar { transform: translateX(0) !important; }
-            .sidebar.collapsed { transform: translateX(-100%); width: 0; opacity: 0; pointer-events: none; }
-        }
-
-        .logo {
-            padding: 30px 24px;
-            border-bottom: 1px solid var(--border-glass);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            white-space: nowrap;
-            min-width: var(--sidebar-width);
-        }
-        .logo h1 {
-            color: #fff;
-            font-size: 24px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 0;
-            font-family: 'Syne', sans-serif;
-        }
-        .logo-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-        .sidebar-toggle-btn {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            color: #fff;
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex-shrink: 0;
-            font-size: 18px;
-        }
-        .sidebar-toggle-btn:hover { background: rgba(102,126,234,0.4); border-color: #667eea; }
-
-        .sidebar-open-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1100;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 22px;
-            box-shadow: 0 8px 25px rgba(102,126,234,0.5);
-            transition: all 0.2s;
-            backdrop-filter: blur(10px);
-        }
-        .sidebar-open-btn:hover { transform: scale(1.05); }
-        .sidebar-open-btn.visible { display: flex; }
-
-        .mobile-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(3px);
-            z-index: 999;
-            display: none;
-        }
-        .mobile-overlay.active { display: block; }
-
-        .nav-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex: 1;
-            min-width: var(--sidebar-width);
-        }
-        .nav-item { margin-bottom: 5px; }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 28px;
-            color: #94a3b8;
-            text-decoration: none;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-            white-space: nowrap;
-            font-size: 15px;
-            font-weight: 500;
-            border-radius: 0 8px 8px 0;
-            margin-right: 12px;
-        }
-        .nav-link:hover { background: rgba(102,126,234,0.12); color: #fff; border-left-color: #667eea; transform: translateX(4px); }
-        .nav-link.active { background: rgba(102,126,234,0.18); color: #fff; border-left-color: #a78bfa; box-shadow: 0 4px 15px rgba(102,126,234,0.2); }
-        .nav-icon { font-size: 20px; width: 26px; text-align: center; }
-
-        /* Main content */
+        /* Main content - NO SIDEBAR */
         .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: margin-left 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            margin-left: 0;
             position: relative;
             z-index: 1;
             min-width: 0;
         }
-        @media (max-width: 768px) { .main-content { margin-left: 0 !important; } }
-        .main-content.expanded { margin-left: 0; }
 
         /* Topbar */
         .topbar {
@@ -216,6 +78,7 @@
         .topbar-left h2 { color: #fff; font-size: 24px; font-weight: 700; font-family: 'Syne', sans-serif; margin: 0; }
         .breadcrumb { color: #94a3b8; font-size: 13px; margin-top: 5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
         .breadcrumb a { color: #667eea; text-decoration: none; }
+        .breadcrumb a:hover { text-decoration: underline; }
         .topbar-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .user-info {
             display: flex; align-items: center; gap: 12px;
@@ -363,7 +226,7 @@
             border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
-        /* Table */
+        /* Table - Event names are NOT clickable */
         .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .modern-table {
             width: 100%;
@@ -392,18 +255,21 @@
         .modern-table tbody tr:hover td { background: rgba(102, 126, 234, 0.06); }
         .modern-table tbody tr:last-child td { border-bottom: none; }
 
-        .event-link {
-            color: #a78bfa;
-            text-decoration: none;
+        /* Event title - NOT clickable, just text */
+        .event-title {
             font-weight: 600;
-            transition: all 0.2s;
-            display: inline-flex;
+            color: #e2e8f0;
+            display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
-        .event-link:hover { color: #c4b5fd; text-decoration: underline; }
+        .event-title i {
+            color: #667eea;
+            font-size: 14px;
+        }
         .event-date-cell { color: #94a3b8; font-size: 12px; }
         .event-location-cell { color: #94a3b8; font-size: 13px; }
+        .event-location-cell i { color: #f87171; margin-right: 4px; }
 
         /* Empty state */
         .empty-state {
@@ -415,7 +281,7 @@
         .empty-state p { font-size: 15px; margin: 0; }
 
         /* ============================================ */
-        /* RESPONSIVE - EXACTLY LIKE USERS PAGE */
+        /* RESPONSIVE */
         /* ============================================ */
         
         @media (max-width: 1200px) {
@@ -482,13 +348,13 @@
             .user-avatar-large { width: 60px; height: 60px; font-size: 20px; }
             .modern-table { min-width: 480px; }
             .modern-table th, .modern-table td { padding: 8px 10px; font-size: 10px; }
-            .event-link { font-size: 11px; }
+            .event-title { font-size: 11px; }
             .event-location-cell { font-size: 11px; }
         }
         
         @media (max-width: 375px) {
             .modern-table { min-width: 420px; }
-            .event-link i { display: none; }
+            .event-title i { display: none; }
         }
     </style>
 </head>
@@ -498,25 +364,7 @@
     <div class="bg-blob blob2"></div>
     <div class="bg-blob blob3"></div>
 
-    <button class="sidebar-open-btn visible" id="sidebarOpenBtn"><i class="fas fa-bars"></i></button>
-    <div class="mobile-overlay" id="mobileOverlay"></div>
-
-    <aside class="sidebar" id="sidebar">
-        <div class="logo">
-            <h1><span class="logo-icon"><i class="fas fa-calendar-check"></i></span><span>EventHub</span></h1>
-            <button class="sidebar-toggle-btn" id="sidebarCloseBtn"><i class="fas fa-chevron-left"></i></button>
-        </div>
-        <ul class="nav-menu">
-            <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link"><span class="nav-icon"><i class="fas fa-chart-pie"></i></span><span>Dashboard</span></a></li>
-            <li class="nav-item"><a href="{{ route('admin.events.index') }}" class="nav-link"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span><span>Events</span></a></li>
-            @if(auth('admin')->check() && auth('admin')->user()->hasRole('super_admin'))
-            <li class="nav-item"><a href="{{ route('admin.admins.index') }}" class="nav-link"><span class="nav-icon"><i class="fas fa-user-shield"></i></span><span>Admins</span></a></li>
-            <li class="nav-item"><a href="{{ route('admin.users.index') }}" class="nav-link active"><span class="nav-icon"><i class="fas fa-users"></i></span><span>Users</span></a></li>
-            @endif
-        </ul>
-    </aside>
-
-    <main class="main-content" id="mainContent">
+    <main class="main-content">
         <div class="topbar">
             <div class="topbar-left">
                 <h2>User Details</h2>
@@ -537,7 +385,7 @@
                 </div>
                 <form method="POST" action="{{ route('admin.logout') }}" style="margin:0;">
                     @csrf
-                    <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button>
                 </form>
             </div>
         </div>
@@ -592,7 +440,7 @@
                 </div>
             </div>
 
-            <!-- Registered Events Card -->
+            <!-- Registered Events Card - Event names are NOT clickable -->
             <div class="custom-card">
                 <div class="card-header-gradient">
                     <i class="fas fa-calendar-check" style="font-size:22px;"></i>
@@ -620,9 +468,10 @@
                                         <tr>
                                             <td><strong style="color:#a78bfa;">#{{ $event->id }}</strong></td>
                                             <td>
-                                                <a href="{{ route('admin.events.show', $event->id) }}" class="event-link">
+                                                {{-- Event name is NOT clickable --}}
+                                                <div class="event-title">
                                                     <i class="fas fa-calendar-alt"></i> {{ Str::limit($event->title, 35) }}
-                                                </a>
+                                                </div>
                                             </td>
                                             <td class="event-date-cell">
                                                 <i class="far fa-calendar"></i>
@@ -634,7 +483,7 @@
                                                 </small>
                                             </td>
                                             <td class="event-location-cell">
-                                                <i class="fas fa-map-marker-alt" style="color:#f87171;"></i>
+                                                <i class="fas fa-map-marker-alt"></i>
                                                 {{ Str::limit($event->location, 30) }}
                                             </td>
                                             <td>
@@ -674,63 +523,5 @@
             </div>
         </div>
     </main>
-
-    <script>
-        // Sidebar functionality - same as users page
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const openBtn = document.getElementById('sidebarOpenBtn');
-        const closeBtn = document.getElementById('sidebarCloseBtn');
-        const mobileOverlay = document.getElementById('mobileOverlay');
-
-        function isMobile() { return window.innerWidth <= 768; }
-
-        function closeSidebar() {
-            if (isMobile()) {
-                sidebar.classList.remove('mobile-open');
-                mobileOverlay.classList.remove('active');
-                openBtn.classList.add('visible');
-            } else {
-                sidebar.classList.add('collapsed');
-                mainContent.classList.add('expanded');
-                openBtn.classList.add('visible');
-            }
-        }
-
-        function openSidebar() {
-            if (isMobile()) {
-                sidebar.classList.add('mobile-open');
-                mobileOverlay.classList.add('active');
-                openBtn.classList.remove('visible');
-            } else {
-                sidebar.classList.remove('collapsed');
-                mainContent.classList.remove('expanded');
-                openBtn.classList.remove('visible');
-            }
-        }
-
-        if (openBtn) openBtn.onclick = openSidebar;
-        if (closeBtn) closeBtn.onclick = closeSidebar;
-        if (mobileOverlay) mobileOverlay.onclick = closeSidebar;
-
-        function handleResize() {
-            if (isMobile()) {
-                sidebar.classList.remove('collapsed');
-                mainContent.classList.remove('expanded');
-                if (!sidebar.classList.contains('mobile-open')) {
-                    openBtn.classList.add('visible');
-                }
-            } else {
-                sidebar.classList.remove('mobile-open');
-                mobileOverlay.classList.remove('active');
-                if (!sidebar.classList.contains('collapsed')) {
-                    openBtn.classList.remove('visible');
-                }
-            }
-        }
-
-        window.addEventListener('resize', handleResize);
-        handleResize();
-    </script>
 </body>
 </html>

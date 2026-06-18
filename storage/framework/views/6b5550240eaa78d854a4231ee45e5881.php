@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>Admin Dashboard - Statistics | EventHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -230,17 +230,17 @@
             <button class="sidebar-toggle-btn" id="sidebarCloseBtn"><i class="fas fa-chevron-left"></i></button>
         </div>
         <ul class="nav-menu">
-            @php $currentAdmin = auth('admin')->user(); @endphp
+            <?php $currentAdmin = auth('admin')->user(); ?>
             
-            {{-- Dashboard --}}
+            
             <li class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <a href="<?php echo e(route('admin.dashboard')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">
                     <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
                     <span>Dashboard</span>
                 </a>
             </li>
             
-            {{-- QR SCANNER BUTTON - ADDED HERE --}}
+            
             <li class="nav-item">
                 <a href="#" onclick="openQRScanner()" class="nav-link">
                     <span class="nav-icon"><i class="fas fa-qrcode"></i></span>
@@ -248,35 +248,35 @@
                 </a>
             </li>
             
-            {{-- Events - Show only if has view_events permission --}}
-            @if($currentAdmin->can('view_events'))
+            
+            <?php if($currentAdmin->can('view_events')): ?>
             <li class="nav-item">
-                <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('admin.events.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.events.*') ? 'active' : ''); ?>">
                     <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span>
                     <span>Events</span>
                 </a>
             </li>
-            @endif
+            <?php endif; ?>
             
-            {{-- Admins - Show only for super_admin --}}
-            @if($currentAdmin->hasRole('super_admin'))
+            
+            <?php if($currentAdmin->hasRole('super_admin')): ?>
             <li class="nav-item">
-                <a href="{{ route('admin.admins.index') }}" class="nav-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('admin.admins.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.admins.*') ? 'active' : ''); ?>">
                     <span class="nav-icon"><i class="fas fa-user-shield"></i></span>
                     <span>Admins</span>
                 </a>
             </li>
-            @endif
+            <?php endif; ?>
             
-            {{-- Users - Show only if has view_users permission --}}
-            @if($currentAdmin->can('view_users'))
+            
+            <?php if($currentAdmin->can('view_users')): ?>
             <li class="nav-item">
-                <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('admin.users.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.users.*') ? 'active' : ''); ?>">
                     <span class="nav-icon"><i class="fas fa-users"></i></span>
                     <span>Users</span>
                 </a>
             </li>
-            @endif
+            <?php endif; ?>
         </ul>
     </aside>
 
@@ -288,37 +288,40 @@
             </div>
             <div class="topbar-right">
                 <div class="user-info">
-                    <div class="user-avatar">{{ strtoupper(substr(auth('admin')->user()->name, 0, 2)) }}</div>
+                    <div class="user-avatar"><?php echo e(strtoupper(substr(auth('admin')->user()->name, 0, 2))); ?></div>
                     <div class="user-details">
-                        <span class="user-name">Welcome, {{ auth('admin')->user()->name }}</span>
-                        <span class="user-role">{{ auth('admin')->user()->hasRole('super_admin') ? 'Super Administrator' : ucfirst(str_replace('_', ' ', auth('admin')->user()->roles->first()->name ?? 'Administrator')) }}</span>
+                        <span class="user-name">Welcome, <?php echo e(auth('admin')->user()->name); ?></span>
+                        <span class="user-role"><?php echo e(auth('admin')->user()->hasRole('super_admin') ? 'Super Administrator' : ucfirst(str_replace('_', ' ', auth('admin')->user()->roles->first()->name ?? 'Administrator'))); ?></span>
                     </div>
                 </div>
-                <form method="POST" action="{{ route('admin.logout') }}" style="margin:0;">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('admin.logout')); ?>" style="margin:0;">
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
                 </form>
             </div>
         </div>
 
-        {{-- Toast Messages --}}
-        @if(session('success'))
+        
+        <?php if(session('success')): ?>
         <div class="info-toast success" id="infoToast">
-            <i class="fas fa-check-circle"></i> {{ session('success') }}
-        </div>
-        @endif
+            <i class="fas fa-check-circle"></i> <?php echo e(session('success')); ?>
 
-        @if(session('info'))
+        </div>
+        <?php endif; ?>
+
+        <?php if(session('info')): ?>
         <div class="info-toast info" id="infoToast">
-            <i class="fas fa-info-circle"></i> {{ session('info') }}
-        </div>
-        @endif
+            <i class="fas fa-info-circle"></i> <?php echo e(session('info')); ?>
 
-        @if(session('error'))
-        <div class="info-toast error" id="infoToast">
-            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
         </div>
-        @endif
+        <?php endif; ?>
+
+        <?php if(session('error')): ?>
+        <div class="info-toast error" id="infoToast">
+            <i class="fas fa-exclamation-circle"></i> <?php echo e(session('error')); ?>
+
+        </div>
+        <?php endif; ?>
 
         <div class="content-area">
             <div class="hero-banner">
@@ -333,15 +336,15 @@
             </div>
 
             <div class="stats-grid">
-                <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-label">Total Users</div><div class="stat-value" data-target="{{ $totalUsers }}">0</div></div>
-                <div class="stat-card green"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-label">Total Events</div><div class="stat-value" data-target="{{ $totalEvents }}">0</div></div>
-                <div class="stat-card teal"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-label">Upcoming Events</div><div class="stat-value" data-target="{{ $upcomingEvents }}">0</div></div>
-                <div class="stat-card pink"><div class="stat-icon"><i class="fas fa-ticket-alt"></i></div><div class="stat-label">Registrations</div><div class="stat-value" data-target="{{ $registrations }}">0</div></div>
+                <div class="stat-card blue"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-label">Total Users</div><div class="stat-value" data-target="<?php echo e($totalUsers); ?>">0</div></div>
+                <div class="stat-card green"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-label">Total Events</div><div class="stat-value" data-target="<?php echo e($totalEvents); ?>">0</div></div>
+                <div class="stat-card teal"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-label">Upcoming Events</div><div class="stat-value" data-target="<?php echo e($upcomingEvents); ?>">0</div></div>
+                <div class="stat-card pink"><div class="stat-icon"><i class="fas fa-ticket-alt"></i></div><div class="stat-label">Registrations</div><div class="stat-value" data-target="<?php echo e($registrations); ?>">0</div></div>
 
-                @if(auth('admin')->user()->hasRole('super_admin'))
-                <div class="stat-card orange"><div class="stat-icon"><i class="fas fa-crown"></i></div><div class="stat-label">Super Admins</div><div class="stat-value" data-target="{{ $superAdmins ?? 0 }}">0</div></div>
-                <div class="stat-card purple"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-label">Total Revenue</div><div class="stat-value" data-target="{{ $revenue ?? 0 }}">0</div></div>
-                @endif
+                <?php if(auth('admin')->user()->hasRole('super_admin')): ?>
+                <div class="stat-card orange"><div class="stat-icon"><i class="fas fa-crown"></i></div><div class="stat-label">Super Admins</div><div class="stat-value" data-target="<?php echo e($superAdmins ?? 0); ?>">0</div></div>
+                <div class="stat-card purple"><div class="stat-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-label">Total Revenue</div><div class="stat-value" data-target="<?php echo e($revenue ?? 0); ?>">0</div></div>
+                <?php endif; ?>
             </div>
         </div>
     </main>
@@ -472,4 +475,4 @@
         window.closeQRScanner = closeQRScanner;
     </script>
 </body>
-</html>
+</html><?php /**PATH C:\Users\User\backend\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>

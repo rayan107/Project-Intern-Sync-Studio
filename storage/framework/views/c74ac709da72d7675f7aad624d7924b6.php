@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 <style>
 /* ============================================
@@ -55,6 +56,288 @@ body::before {
   pointer-events: none;
 }
 .wrap { max-width: 1480px; margin: 0 auto; padding: 0 32px; }
+
+/* ============================================
+   CAROUSEL / AUTO-SCROLL STYLES - SMALLER
+   ============================================ */
+.carousel-section {
+  margin-bottom: 40px;
+  background: var(--bg3);
+  border-radius: 28px;
+  padding: 24px 28px;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.carousel-header h2 {
+  font-weight: 800;
+  color: var(--txt);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carousel-header h2 i {
+  color: var(--accent);
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.carousel-btn-mini {
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  color: var(--txt2);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.carousel-btn-mini:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.carousel-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 14px;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 0;
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+  padding: 2px 1px;
+}
+
+.carousel-track .event-card {
+  flex: 0 0 100%;
+  min-width: 100%;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  max-height: 180px;
+}
+
+.carousel-track .event-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: var(--card-hover);
+  border-color: var(--accent);
+}
+
+.carousel-track .event-card .card-img-wrap {
+  width: 280px;
+  min-width: 280px;
+  height: 180px;
+  overflow: hidden;
+  background: var(--bg5);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.carousel-track .event-card .card-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .55s;
+}
+
+.carousel-track .event-card:hover .card-img-wrap img {
+  transform: scale(1.06);
+}
+
+.carousel-track .event-card .card-body {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.carousel-track .event-card .card-title {
+  font-size: 17px;
+  margin-bottom: 4px;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.carousel-track .event-card .card-desc {
+  font-size: 13px;
+  -webkit-line-clamp: 2;
+  margin-bottom: 6px;
+  color: var(--txt2);
+}
+
+.carousel-track .event-card .card-meta {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.carousel-track .event-card .card-date-chip {
+  font-size: 11px;
+  padding: 3px 10px;
+  margin-bottom: 6px;
+}
+
+.carousel-track .event-card .card-foot {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+.carousel-track .event-card .card-stats .attendees {
+  font-size: 12px;
+}
+
+.carousel-track .event-card .btn-reg {
+  padding: 5px 14px;
+  font-size: 12px;
+}
+
+.carousel-track .event-card .price-badge {
+  font-size: 11px;
+  padding: 4px 12px;
+  top: 10px;
+  right: 10px;
+}
+
+.carousel-track .event-card .fav-badge {
+  width: 30px;
+  height: 30px;
+  font-size: 13px;
+  bottom: 10px;
+  right: 10px;
+}
+
+.carousel-track .event-card .event-weather {
+  font-size: 11px;
+  padding: 3px 10px;
+  margin-top: 4px;
+}
+
+.carousel-track .event-card .card-rating-mini {
+  font-size: 11px;
+}
+
+.carousel-track .event-card .reg-badge {
+  font-size: 10px;
+  padding: 3px 10px;
+  top: 10px;
+  left: 10px;
+}
+
+.carousel-track .event-card .finished-badge {
+  font-size: 10px;
+  padding: 4px 10px;
+  top: 10px;
+  left: 10px;
+}
+
+.carousel-track .event-card .share-modal-btn {
+  display: none;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--txt2);
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
+}
+
+.carousel-btn:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev { left: 12px; }
+.carousel-btn.next { right: 12px; }
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg4);
+  border: 2px solid var(--border2);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.carousel-dot.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.3);
+}
+
+.carousel-progress {
+  width: 100%;
+  height: 2px;
+  background: var(--bg4);
+  border-radius: 2px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.carousel-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.1s linear;
+}
 
 /* Weather Popup Style */
 .event-weather {
@@ -152,7 +435,6 @@ body::before {
 .weather-popup-body {
   padding: 28px;
 }
-
 .weather-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -216,13 +498,13 @@ body::before {
   margin-bottom: 16px;
 }
 
-/* Ticket Button */
-.ticket-btn {
+/* QR Button */
+.qr-btn {
   background: var(--green-dim) !important;
   border-color: var(--green) !important;
   color: var(--green) !important;
 }
-.ticket-btn:hover {
+.qr-btn:hover {
   background: var(--green) !important;
   color: white !important;
 }
@@ -246,7 +528,6 @@ body::before {
 .event-card.finished {
   opacity: 0.75;
   filter: grayscale(0.1);
-  pointer-events: none;
 }
 .event-card.finished .btn-reg,
 .event-card.finished .fav-badge,
@@ -258,17 +539,6 @@ body::before {
   pointer-events: auto;
   cursor: pointer;
 }
-.level-progress-card {
-  background: linear-gradient(135deg, var(--bg4), var(--bg3));
-  border-radius: 20px;
-  padding: 20px;
-  margin-top: 20px;
-  border: 1px solid var(--border2);
-  transition: transform 0.3s ease;
-}
-.level-progress-card:hover { transform: translateY(-2px); }
-.progress-bar-bg { height: 10px; background: var(--bg5); border-radius: 20px; overflow: hidden; }
-.progress-bar-fill { height: 100%; border-radius: 20px; transition: width 0.5s ease; }
 .stats-modal-btn {
   background: var(--accent-dim);
   border: 1px solid var(--accent);
@@ -538,7 +808,49 @@ body::before {
 .edit-form-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
 .btn-ef-cancel { padding: 8px 16px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 10px; color: var(--txt2); cursor: pointer; font-size: 12px; }
 .btn-ef-save { padding: 8px 20px; background: linear-gradient(135deg, var(--green), #16a35a); border: none; border-radius: 10px; color: white; cursor: pointer; font-weight: 600; font-size: 12px; }
+
 @media (max-width: 768px) {
+  .carousel-section {
+    padding: 12px 10px;
+    border-radius: 16px;
+  }
+  .carousel-header h2 {
+    font-size: 16px;
+  }
+  .carousel-btn-mini {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+  .carousel-track .event-card {
+    flex-direction: column;
+    max-height: none;
+  }
+  .carousel-track .event-card .card-img-wrap {
+    width: 100%;
+    min-width: auto;
+    height: 140px;
+  }
+  .carousel-track .event-card .card-body {
+    padding: 12px 14px;
+  }
+  .carousel-track .event-card .card-title {
+    font-size: 15px;
+  }
+  .carousel-track .event-card .card-desc {
+    font-size: 12px;
+    -webkit-line-clamp: 1;
+  }
+  .carousel-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+  .carousel-btn.prev { left: 6px; }
+  .carousel-btn.next { right: 6px; }
+  .carousel-dot {
+    width: 8px;
+    height: 8px;
+  }
   .wrap { padding: 0 16px; }
   .hero-strip { padding: 48px 0 32px; }
   .stats-bar { flex-direction: column; width: 100%; }
@@ -570,6 +882,18 @@ body::before {
   .dg-info-ico { width: 40px; height: 40px; }
   .dg-info-ico i { font-size: 18px; }
   .card-title { font-size: 16px; }
+  .carousel-track .event-card .card-img-wrap {
+    height: 120px;
+  }
+  .carousel-track .event-card .card-title {
+    font-size: 14px;
+  }
+  .carousel-track .event-card .card-body {
+    padding: 10px 12px;
+  }
+  .carousel-track .event-card .card-desc {
+    display: none;
+  }
 }
 </style>
 </head>
@@ -625,6 +949,35 @@ body::before {
 
   <div id="guestBanner" class="guest-banner" style="display: none;"><p><i class="bi bi-star-fill"></i> <strong>Join EventHub today!</strong> <span>Log in or create an account to register for events and see your personal dashboard.</span></p><button class="btn" onclick="openLoginModal()">Get Started <i class="bi bi-arrow-right"></i></button></div>
 
+  <!-- ============================================
+       CAROUSEL / AUTO-SCROLL SECTION - SMALLER
+       ============================================ -->
+  <div class="carousel-section" id="carouselSection">
+    <div class="carousel-header">
+      <h2><i class="bi bi-stars"></i> Featured Events</h2>
+      <div class="carousel-controls">
+        <button class="carousel-btn-mini" onclick="prevSlide()">
+          <i class="bi bi-chevron-left"></i> Prev
+        </button>
+        <button class="carousel-btn-mini" onclick="nextSlide()">
+          Next <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+    <div class="carousel-wrapper">
+      <div class="carousel-track" id="carouselTrack">
+        <!-- Events will be inserted here by JavaScript -->
+      </div>
+      <button class="carousel-btn prev" onclick="prevSlide()"><i class="bi bi-chevron-left"></i></button>
+      <button class="carousel-btn next" onclick="nextSlide()"><i class="bi bi-chevron-right"></i></button>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+    <div class="carousel-progress">
+      <div class="carousel-progress-bar" id="carouselProgressBar"></div>
+    </div>
+  </div>
+
+  <!-- FILTER PANEL -->
   <div class="filter-panel" id="events-section">
     <div class="filter-row">
       <div class="search-wrap"><i class="bi bi-search"></i><input type="text" id="searchInput" placeholder="Search events by title or location…"></div>
@@ -650,17 +1003,20 @@ body::before {
     </div>
   </div>
 
+  <!-- RECOMMENDATIONS -->
   <div class="section-block" id="recommendations-section">
     <div class="sec-tag"><i class="bi bi-stars"></i> AI-Powered Recommendations</div>
     <h2 class="sec-title">Events You Might <span>Love</span></h2>
     <div id="recommendationsGrid" class="events-grid"></div>
   </div>
 
+  <!-- USER DASHBOARD -->
   <div id="userDashboard" class="user-dashboard" style="display: none;">
     <div class="dashboard-header"><div class="dashboard-title"><i class="bi bi-person-square"></i> <span id="dashboardWelcome"></span></div><div class="dashboard-stats"><i class="bi bi-calendar-check"></i> <span id="dashboardCount">0</span> event(s) registered</div></div>
     <div id="dashboardEventsList" class="dashboard-events"></div>
   </div>
 
+  <!-- MAIN EVENTS GRID -->
   <div class="events-grid" id="eventsGrid">
     <?php $__empty_1 = true; $__currentLoopData = $events; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $event): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
     <?php
@@ -685,7 +1041,7 @@ body::before {
         <div class="card-meta"><i class="bi bi-clock"></i><?php echo e(\Carbon\Carbon::parse($event->start_time)->format('g:i A')); ?> – <?php echo e(\Carbon\Carbon::parse($event->end_time)->format('g:i A')); ?></div>
         <div class="card-meta"><i class="bi bi-geo-alt-fill"></i><?php echo e($event->location); ?></div>
         
-        <!-- WEATHER BUTTON - Click to show popup -->
+        <!-- WEATHER BUTTON -->
         <div class="event-weather" id="weather-<?php echo e($event->id); ?>" data-event-id="<?php echo e($event->id); ?>" data-event-date="<?php echo e($event->event_date); ?>" data-event-title="<?php echo e(addslashes($event->title)); ?>" data-location="<?php echo e($event->location); ?>" data-lat="<?php echo e($event->latitude ?? 37.7749); ?>" data-lng="<?php echo e($event->longitude ?? -122.4194); ?>">
           <i class="bi bi-cloud-sun"></i> <span>Loading weather...</span>
         </div>
@@ -703,36 +1059,40 @@ body::before {
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?> <div class="empty-state"><i class="bi bi-calendar-x"></i><h3>No events yet</h3><p>Check back soon for upcoming events!</p></div> <?php endif; ?>
   </div>
 
+  <!-- FAVORITES SECTION -->
   <div class="section-block" id="favorites-section" style="display: none;"><div class="sec-tag"><i class="bi bi-heart-fill"></i> Your Favorites</div><h2 class="sec-title">Saved Events</h2><div id="favoritesGrid" class="events-grid"></div></div>
 
+  <!-- ABOUT SECTION -->
   <div class="section-block" id="about-section">
     <div class="about-grid"><div><div class="sec-tag"><i class="bi bi-info-circle-fill"></i> About Us</div><h2 class="sec-title">Built for event lovers</h2><p>EventHub is the premier platform for discovering and joining amazing events. Tech summits, music festivals, community drives — we have something for everyone.</p><div class="feat-grid"><div class="feat-card"><div><h4>Easy Registration</h4><p>One-click sign-up</p></div></div><div class="feat-card"><div><h4>Community</h4><p>Meet like-minded people</p></div></div></div></div><div class="about-img-wrap"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800" alt="Event crowd"></div></div>
   </div>
 
+  <!-- CONTACT SECTION -->
   <div class="section-block" id="contact-section">
     <div class="contact-grid"><div><div class="sec-tag"><i class="bi bi-envelope-fill"></i> Contact</div><h2 class="sec-title">Get in Touch</h2><div class="ci-list"><div class="ci"><div><h5>Visit Us</h5><p>123 Event Street, San Francisco, CA 94105</p></div></div><div class="ci"><div><h5>Email</h5><p>hello@eventhub.com</p></div></div><div class="ci"><div><h5>Phone</h5><p>+1 (555) 123-4567</p></div></div></div></div>
       <div class="contact-form-card" id="contactFormCard"><div class="contact-guest-overlay" id="contactGuestOverlay"><i class="bi bi-lock-fill" style="font-size:48px;"></i><p><strong>Login required</strong><br>Please sign in to send us a message</p><button onclick="openLoginModal()">Login / Sign Up</button></div><h4>Send a Message</h4><form action="/messages" method="POST" onsubmit="sendContact(event)"><?php echo csrf_field(); ?><input type="text" id="contactName" placeholder="Your Name" required disabled><input type="email" id="contactEmail" placeholder="Your Email" required disabled><textarea id="contactMessage" placeholder="Your message…" rows="4" required disabled></textarea><button type="submit" class="btn-send" disabled>Send Message <i class="bi bi-send-fill"></i></button></form></div>
     </div>
   </div>
 
+  <!-- FOOTER -->
   <div class="footer-block"><div class="footer-grid"><div><h3>🎯EventHub</h3><p>Your premier destination for discovering events.</p><div class="social-row"><a href="#"><i class="bi bi-facebook"></i></a><a href="#"><i class="bi bi-twitter-x"></i></a><a href="#"><i class="bi bi-instagram"></i></a></div></div><div><h5>Navigation</h5><ul><li><a href="#events-section">Events</a></li><li><a href="#about-section">About</a></li><li><a href="#contact-section">Contact</a></li></ul></div><div><h5>Event Types</h5><ul><li><a href="#" onclick="setTab('free');return false">Free Events</a></li><li><a href="#" onclick="setTab('paid');return false">Paid Events</a></li></ul></div><div><h5>Support</h5><ul><li><a href="#">FAQ</a></li><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li></ul></div></div><div class="footer-bottom"><span>© 2025 EventHub. All rights reserved.</span><span>Made with ❤️ for event lovers</span></div></div>
 </div>
 
-<!-- EVENT TICKET MODAL (PROOF OF REGISTRATION) -->
-<div id="ticketModal" class="modal-overlay" style="display: none;">
+<!-- QR CODE MODAL -->
+<div id="qrModal" class="modal-overlay" style="display: none;">
   <div class="modal-box" style="max-width: 450px;">
-    <div class="modal-head" style="background: linear-gradient(135deg, var(--green), #16a35a);">
-      <h2><i class="bi bi-ticket-perforated"></i> Your Event Ticket</h2>
-      <p>Show this at the entrance</p>
-      <button class="modal-x" onclick="closeTicketModal()"><i class="bi bi-x-lg"></i></button>
+    <div class="modal-head" style="background: linear-gradient(135deg, var(--accent), var(--accent2));">
+      <h2><i class="bi bi-qr-code"></i> Check‑in QR Code</h2>
+      <p id="qrEventTitle">Event</p>
+      <button class="modal-x" onclick="closeQRModal()"><i class="bi bi-x-lg"></i></button>
     </div>
-    <div class="modal-body" style="text-align: center; padding: 20px;">
-      <div id="ticketContent" style="background: linear-gradient(135deg, var(--bg4), var(--bg3)); border-radius: 20px; padding: 25px; border: 2px solid var(--green); margin-bottom: 15px;">
-        <!-- Ticket will be dynamically inserted here -->
-      </div>
-      <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button class="btn-cancel" style="flex: 1;" onclick="closeTicketModal()">Close</button>
-        <button class="btn-submit" style="flex: 1;" onclick="downloadTicket()"><i class="bi bi-download"></i> Download Ticket</button>
+    <div class="modal-body" style="text-align: center;">
+      <div id="qrCodeCanvas" style="display: flex; justify-content: center; margin: 15px 0;"></div>
+      <p style="font-size:13px; color:var(--txt2);">Admin can scan this QR code to check you in.</p>
+      <p style="font-size:11px; color:var(--txt3);" id="qrTokenText"></p>
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button class="btn-cancel" onclick="closeQRModal()">Close</button>
+        <button class="btn-submit" onclick="downloadQRImage()"><i class="bi bi-download"></i> Download</button>
       </div>
     </div>
   </div>
@@ -763,19 +1123,25 @@ body::before {
   </div>
 </div>
 
-<!-- REST OF MODALS (detail, reviews, register, cancel, login, registerUser, profile, share) -->
+<!-- DETAIL MODAL -->
 <div class="detail-overlay" id="detailModal"><div class="detail-box"><button class="detail-close" onclick="closeDetail()"><i class="bi bi-x-lg"></i></button><div class="dg-hero"><img class="dg-main-img" id="dgMainImg" src=""><button class="dg-arrow prev" id="dgPrev" onclick="dgNav(-1)"><i class="bi bi-chevron-left"></i></button><button class="dg-arrow next" id="dgNext" onclick="dgNav(1)"><i class="bi bi-chevron-right"></i></button><div class="dg-counter" id="dgCounter">1/1</div><div class="dg-price-badge" id="dgPriceBadge"></div></div><div class="dg-thumbs" id="dgThumbs"></div><div class="dg-content"><div class="dg-header-row"><h2 class="dg-title" id="dgTitle"></h2><div class="dg-reg-badge-big" id="dgRegBadgeBig" style="display:none;"><i class="bi bi-check-circle-fill"></i> You're Registered!</div></div><div class="dg-chips" id="dgChips"></div><p class="dg-desc" id="dgDesc"></p><div class="dg-info-grid"><div class="dg-info-card"><div><h5>Date</h5><p id="dgDate"></p></div></div><div class="dg-info-card"><div><h5>Time</h5><p id="dgTime"></p></div></div><div class="dg-info-card"><div><h5>Location</h5><p id="dgLoc"></p></div></div><div class="dg-info-card"><div><h5>Price</h5><p id="dgPriceInfo"></p></div></div></div><div class="dg-divider"></div><div class="dg-actions"><div class="dg-attendees"><i class="bi bi-people-fill"></i><span><strong id="dgAttendeesNum"></strong> people attending</span></div><div class="dg-buttons-horizontal"><button class="btn-dg-close" onclick="closeDetail()"><i class="bi bi-x"></i> Close</button><button class="btn-dg-fav fav-disabled" id="dgFavBtn" onclick="toggleFavoriteFromDetail()"><i class="bi bi-heart" id="dgFavIcon"></i> Favorite</button><button class="btn-dg-calendar" id="dgCalendarBtn" onclick="addToGoogleCalendar()" disabled><i class="bi bi-google"></i> Add to Google Calendar</button><button class="btn-dg-cancel" id="dgCancelBtn" onclick="triggerCancelFromDetail()" style="display:none;"><i class="bi bi-x-circle"></i> Cancel Registration</button></div></div></div></div></div>
 
+<!-- REVIEWS MODAL -->
 <div class="modal-overlay" id="reviewsModal"><div class="modal-box" style="max-width: 650px;"><div class="modal-head" style="background: linear-gradient(135deg, var(--gold), #b8860b);"><h2 id="reviewsModalTitle">Rate & Review</h2><p>Share your experience with stars and a comment</p><button class="modal-x" onclick="closeReviewsModal()"><i class="bi bi-x-lg"></i></button></div><div class="modal-body"><div id="reviewsList"></div><div id="writeReviewSection" style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 24px;"><h4>Write a Review</h4><div id="reviewAuthRequired" style="display:none; text-align:center; padding:20px; background:var(--bg4); border-radius:16px;"><i class="bi bi-lock-fill" style="font-size: 24px;"></i><p>Please <a href="#" onclick="closeReviewsModal(); openLoginModal(); return false;">login</a> to leave a review</p></div><div id="reviewRegisterRequired" style="display:none; text-align:center; padding:20px; background:var(--bg4); border-radius:16px;"><i class="bi bi-calendar-check" style="font-size: 24px;"></i><p>You need to register for this event before leaving a review.</p></div><div id="reviewAlreadySubmitted" style="display:none; text-align:center; padding:20px; background:var(--bg4); border-radius:16px;"><i class="bi bi-check-circle-fill" style="color:var(--green);font-size:24px;"></i><p style="margin-top:10px;">You have already reviewed this event. Thank you!</p></div><div id="reviewFormContainer" style="display:none;"><div class="mf"><label>Rate this event (1-5 stars)</label><div class="review-stars" id="ratingStars"><span class="star-rating" data-value="1">★</span><span class="star-rating" data-value="2">★</span><span class="star-rating" data-value="3">★</span><span class="star-rating" data-value="4">★</span><span class="star-rating" data-value="5">★</span></div><input type="hidden" id="reviewRating" value="0"></div><div class="mf"><label>Your Comment</label><textarea id="reviewComment" rows="3" placeholder="Tell others about your experience..."></textarea></div><div class="modal-btns"><button type="button" class="btn-cancel" onclick="closeReviewsModal()">Cancel</button><button type="button" class="btn-submit" id="submitReviewBtn" onclick="submitReview()"><i class="bi bi-star-fill"></i> Submit Review</button></div></div></div></div></div></div>
 
+<!-- REGISTER MODAL -->
 <div class="modal-overlay" id="registerModal"><div class="modal-box"><div class="modal-head"><h2>Register for Event</h2><p>Secure your spot in seconds</p><button class="modal-x" onclick="closeModal()"><i class="bi bi-x-lg"></i></button></div><div class="modal-body"><form onsubmit="submitReg(event)"><div class="mf"><label><i class="bi bi-person-fill"></i> Full Name *</label><input type="text" id="rName" required></div><div class="mf"><label><i class="bi bi-envelope-fill"></i> Email *</label><input type="email" id="rEmail" required></div><div id="regPasswordWrapper" class="mf" style="display: none;"><label><i class="bi bi-lock-fill"></i> Password *</label><input type="password" id="rPass"></div><div class="summary-card"><h4><i class="bi bi-info-circle-fill"></i> Event Summary</h4><div class="sr"><span>Event</span><span id="sName">—</span></div><div class="sr"><span>Date</span><span id="sDate">—</span></div><div class="sr"><span>Time</span><span id="sTime">—</span></div><div class="sr"><span>Location</span><span id="sLoc">—</span></div><div class="sr"><span>Price</span><span id="sPrice">—</span></div></div><div class="modal-btns"><button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button><button type="submit" class="btn-submit"><i class="bi bi-check-circle-fill"></i> Register Now</button></div></form></div></div></div>
 
+<!-- CANCEL MODAL -->
 <div class="modal-overlay" id="cancelModal"><div class="modal-box"><div class="cancel-modal-head modal-head"><h2><i class="bi bi-exclamation-triangle-fill"></i> Cancel Registration</h2><p>Are you sure you want to cancel?</p><button class="modal-x" onclick="closeCancelModal()"><i class="bi bi-x-lg"></i></button></div><div class="modal-body"><p style="color:var(--txt2); margin-bottom:16px;">You are about to cancel your registration for:</p><div class="summary-card" style="background:var(--red-dim); border-color:var(--red);"><div class="sr"><span>Event</span><span id="cancelEventName" style="color:var(--red); font-weight:700;">—</span></div></div><p style="color:var(--txt3); font-size:13px; margin-top:8px;">This action cannot be undone. You may re-register later if spots are available.</p><div class="modal-btns"><button type="button" class="btn-cancel" onclick="closeCancelModal()">Keep Registration</button><button type="button" class="btn-confirm-cancel" id="confirmCancelBtn" onclick="confirmCancel()"><i class="bi bi-x-circle-fill"></i> Yes, Cancel</button></div></div></div></div>
 
+<!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal"><div class="modal-box"><div class="modal-head" style="background: linear-gradient(135deg, var(--accent), var(--accent2));"><h2>Welcome Back</h2><p>Login to your account</p><button class="modal-x" onclick="closeLoginModal()"><i class="bi bi-x-lg"></i></button></div><div class="modal-body"><form onsubmit="loginUser(event)"><div class="mf"><label>Email</label><input type="email" id="loginEmail" required></div><div class="mf"><label>Password</label><input type="password" id="loginPassword" required></div><div class="modal-btns"><button type="button" class="btn-cancel" onclick="closeLoginModal()">Cancel</button><button type="submit" class="btn-submit">Login</button></div><p style="text-align:center; margin-top:12px; font-size:14px; color:var(--txt2);">No account? <a href="#" onclick="switchToRegister()" style="color:var(--accent);">Create one</a></p></form></div></div></div>
 
+<!-- REGISTER USER MODAL -->
 <div class="modal-overlay" id="registerUserModal"><div class="modal-box"><div class="modal-head" style="background: linear-gradient(135deg, var(--green), #16a35a);"><h2>Create Account</h2><p>Join EventHub today</p><button class="modal-x" onclick="closeRegisterUserModal()"><i class="bi bi-x-lg"></i></button></div><div class="modal-body"><form onsubmit="registerUser(event)"><div class="mf"><label>Full Name</label><input type="text" id="regUserName" required></div><div class="mf"><label>Email</label><input type="email" id="regUserEmail" required></div><div class="mf"><label>Password</label><input type="password" id="regUserPassword" required minlength="6"></div><div class="modal-btns"><button type="button" class="btn-cancel" onclick="closeRegisterUserModal()">Cancel</button><button type="submit" class="btn-submit">Register</button></div><p style="text-align:center; margin-top:12px; font-size:14px; color:var(--txt2);">Already have an account? <a href="#" onclick="switchToLogin()" style="color:var(--accent);">Login</a></p></form></div></div></div>
 
+<!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileModal">
   <div class="profile-modal-box">
     <div class="profile-modal-head">
@@ -798,13 +1164,14 @@ body::before {
   </div>
 </div>
 
+<!-- SHARE MODAL -->
 <div class="modal-overlay" id="shareModal"><div class="modal-box"><div class="modal-head" style="background: linear-gradient(135deg, var(--accent), var(--accent2));"><h2><i class="bi bi-share-fill"></i> Share Event</h2><p>Invite your friends!</p><button class="modal-x" onclick="closeShareModal()"><i class="bi bi-x-lg"></i></button></div><div class="modal-body"><div style="text-align:center; margin-bottom:20px;"><div style="font-size:48px;" id="shareEventEmoji">🎉</div><div style="font-weight:800; font-size:18px;" id="shareEventTitle">Event Title</div></div><div style="display:flex; gap:12px; justify-content:center; margin-bottom:20px;"><button class="btn-submit" style="flex:1;" onclick="shareViaWhatsApp()"><i class="bi bi-whatsapp"></i> WhatsApp</button><button class="btn-submit" style="flex:1;" onclick="shareViaTwitter()"><i class="bi bi-twitter-x"></i> X</button><button class="btn-submit" style="flex:1;" onclick="shareViaFacebook()"><i class="bi bi-facebook"></i> Facebook</button></div><div class="mf"><label>Copy Link</label><div style="display:flex; gap:8px;"><input type="text" id="shareLinkInput" readonly style="flex:1;"><button onclick="copyShareLink()" class="btn-submit" style="flex:0;">Copy</button></div></div></div></div></div>
 
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
 // ======================================================
-// FULL JAVASCRIPT WITH TICKET (PROOF OF REGISTRATION)
+// FULL JAVASCRIPT WITH CAROUSEL - SMALLER
 // ======================================================
 
 let registered = [], favorites = [], currentUser = null, users = JSON.parse(localStorage.getItem('eventhub_users') || '[]');
@@ -812,111 +1179,74 @@ let currentEventId = null, cancelTargetId = null, calendarEvents = JSON.parse(lo
 let activeTab = 'all', currentReviewEventId = null, dgCurrentCard = null, dgCurrentEventId = null, dgImages = [], dgIdx = 0;
 let shareEventId = null, shareEventTitle = null;
 
+// ============================================
+// CAROUSEL VARIABLES
+// ============================================
+let currentSlide = 0;
+let carouselInterval = null;
+let isCarouselPaused = false;
+let carouselEvents = [];
+let progressInterval = null;
+let progressWidth = 0;
+
 function escapeHtml(s) { if (!s) return ''; return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]); }
 function toast(icon, msg) { let w = document.getElementById('toastWrap'); let te = document.createElement('div'); te.className = 'toast'; te.innerHTML = `<span style="font-size:18px">${icon}</span><span>${msg}</span>`; w.appendChild(te); setTimeout(() => te.remove(), 3800); }
 function fmtTime(t) { if (!t) return ''; let p = t.split(':'); let h = parseInt(p[0]); return `${h%12||12}:${p[1]||'00'} ${h>=12?'PM':'AM'}`; }
 function fmtDateLong(dateStr) { return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }); }
 
 // ============================================
-// TICKET FUNCTIONS (PROOF OF REGISTRATION)
+// QR CODE FUNCTIONS
 // ============================================
-
-function showEventTicket(eventId, eventTitle, eventDate, eventLocation, eventTime) {
+async function showQRCodeForEvent(eventId, eventTitle, eventDate, eventLocation, eventTime) {
     if (!currentUser) {
         toast('🔐', 'Please login first');
         openLoginModal();
         return;
     }
-    
     if (!registered.includes(parseInt(eventId))) {
         toast('❌', 'You are not registered for this event');
         return;
     }
-    
-    // Generate unique registration ID
-    const regId = `${currentUser.id}-${eventId}-${Math.floor(Date.now() / 1000000)}`;
-    const formattedDate = new Date(eventDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    
-    const ticketHTML = `
-        <div style="text-align: center;">
-            <div style="font-size: 48px; margin-bottom: 10px;">🎯</div>
-            <h3 style="color: var(--txt); font-size: 20px; margin-bottom: 15px;">${escapeHtml(eventTitle)}</h3>
-            <div style="border-top: 2px dashed var(--border2); margin: 15px 0;"></div>
-            <div style="text-align: left; margin: 15px 0;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                    <i class="bi bi-calendar3" style="color: var(--green); font-size: 18px;"></i>
-                    <span style="color: var(--txt);">${formattedDate}</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                    <i class="bi bi-clock" style="color: var(--green); font-size: 18px;"></i>
-                    <span style="color: var(--txt);">${eventTime}</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                    <i class="bi bi-geo-alt-fill" style="color: var(--green); font-size: 18px;"></i>
-                    <span style="color: var(--txt);">${escapeHtml(eventLocation)}</span>
-                </div>
-            </div>
-            <div style="border-top: 2px dashed var(--border2); margin: 15px 0;"></div>
-            <div style="background: var(--bg5); border-radius: 12px; padding: 12px; margin-top: 10px;">
-                <div style="font-size: 12px; color: var(--txt3);">REGISTERED TO</div>
-                <div style="font-weight: 800; color: var(--txt); font-size: 16px;">${escapeHtml(currentUser.name)}</div>
-                <div style="font-size: 12px; color: var(--txt2);">${currentUser.email}</div>
-            </div>
-            <div style="margin-top: 15px; font-size: 11px; color: var(--txt3);">
-                Registration ID: ${regId}
-            </div>
-            <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--green);">
-                <i class="bi bi-check-circle-fill"></i> Valid Entry - Show this at the entrance
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('ticketContent').innerHTML = ticketHTML;
-    document.getElementById('ticketModal').style.display = 'flex';
-    document.getElementById('ticketModal').classList.add('active');
-    
-    window.currentTicketData = {
-        eventTitle: eventTitle,
-        eventDate: eventDate,
-        eventLocation: eventLocation,
-        eventTime: eventTime,
-        userName: currentUser.name,
-        userEmail: currentUser.email,
-        regId: regId
-    };
-}
-
-function closeTicketModal() {
-    document.getElementById('ticketModal').classList.remove('active');
-    document.getElementById('ticketModal').style.display = 'none';
-}
-
-function downloadTicket() {
-    const ticketElement = document.getElementById('ticketContent');
-    if (!ticketElement) {
-        toast('❌', 'Could not download ticket');
-        return;
+    const token = `${currentUser.id}_${eventId}`;
+    const baseUrl = 'https://pending-peddling-recount.ngrok-free.dev';
+    const checkinUrl = `${baseUrl}/checkin/${token}?ngrok-skip-browser-warning=true`;
+    document.getElementById('qrEventTitle').innerHTML = escapeHtml(eventTitle);
+    document.getElementById('qrTokenText').innerHTML = `ID: ${token}`;
+    const container = document.getElementById('qrCodeCanvas');
+    container.innerHTML = '';
+    try {
+        new QRCode(container, {
+            text: checkinUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    } catch(e) {
+        container.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(checkinUrl)}" alt="QR Code">`;
     }
-    
-    html2canvas(ticketElement, {
-        scale: 2,
-        backgroundColor: null,
-        logging: false
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `ticket_${window.currentTicketData.eventTitle.replace(/[^a-z0-9]/gi, '_')}.png`;
-        link.href = canvas.toDataURL();
-        link.click();
-        toast('📱', 'Ticket downloaded!');
-    }).catch(() => {
-        toast('❌', 'Download failed');
-    });
+    document.getElementById('qrModal').style.display = 'flex';
+    document.getElementById('qrModal').classList.add('active');
+    window.currentQRToken = token;
+}
+function closeQRModal() {
+    document.getElementById('qrModal').classList.remove('active');
+    document.getElementById('qrModal').style.display = 'none';
+}
+function downloadQRImage() {
+    const canvas = document.querySelector('#qrCodeCanvas canvas, #qrCodeCanvas img');
+    if (!canvas) { toast('❌', 'QR not ready'); return; }
+    const link = document.createElement('a');
+    link.download = `checkin_${window.currentQRToken}.png`;
+    link.href = canvas.src || canvas.toDataURL();
+    link.click();
+    toast('📱', 'QR code saved');
 }
 
 // ============================================
 // WEATHER FUNCTIONS
 // ============================================
-
 function getWeatherByMonth(month, location) {
   const weatherPatterns = [
     { emoji: '❄️', condition: 'Cold winter day', temp: 5, tempMin: 0, tempMax: 8, wind: 15, humidity: 75, uv: 1, feelsLike: 2 },
@@ -932,10 +1262,8 @@ function getWeatherByMonth(month, location) {
     { emoji: '🌧️', condition: 'Cool autumn day', temp: 12, tempMin: 7, tempMax: 16, wind: 14, humidity: 70, uv: 2, feelsLike: 10 },
     { emoji: '❄️', condition: 'Cold winter day', temp: 7, tempMin: 2, tempMax: 10, wind: 15, humidity: 78, uv: 1, feelsLike: 4 }
   ];
-  
   let weather = { ...weatherPatterns[month] };
   const locationLower = location.toLowerCase();
-  
   if (locationLower.includes('beach') || locationLower.includes('coast')) {
     weather.temp += 3; weather.tempMin += 2; weather.tempMax += 3; weather.wind += 5; weather.humidity += 10; weather.feelsLike = weather.temp;
     if (month >= 5 && month <= 8) { weather.condition = 'Sunny beach weather'; weather.emoji = '🏖️'; }
@@ -1041,27 +1369,6 @@ function getProgressToNextLevel(cnt) {
 }
 function calculateDiscountedPrice(price, level) { const d=levelDiscounts[level]||0; return { originalPrice:price, discountPercent:d, discountAmount:(price*d)/100, finalPrice:Math.max(0,price-(price*d)/100) }; }
 
-function createLevelProgressCard(cnt) {
-  const info=getUserLevelInfo(cnt), prog=getProgressToNextLevel(cnt), disc=info.discount;
-  let achievements=[]; if(cnt>=1) achievements.push('🎉 First Event'); if(cnt>=5) achievements.push('⭐ 5 Events'); if(cnt>=10) achievements.push('🏆 10 Events'); if(cnt>=20) achievements.push('👑 Elite Member');
-  return `<div class="level-progress-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:40px;">${info.name.charAt(0)}</div><div><div style="font-weight:800;color:var(--txt);font-size:18px;">${info.name}</div><div style="font-size:12px;color:var(--txt2);">${cnt} total events</div></div></div><div style="text-align:right;"><div style="font-size:32px;font-weight:800;color:${info.color};">${cnt}</div><div style="font-size:11px;color:var(--txt3);">Total Events</div></div></div>${disc>0?`<div style="margin-bottom:15px;padding:10px;background:linear-gradient(135deg,var(--green-dim),var(--bg4));border-radius:12px;text-align:center;border:1px solid var(--green);"><span style="font-size:20px;">🏷️</span><span style="font-weight:700;color:var(--green);font-size:14px;">${disc}% DISCOUNT ON ALL EVENTS!</span><div style="font-size:11px;color:var(--txt2);margin-top:4px;">Applied automatically at checkout</div></div>`:`<div style="margin-bottom:15px;padding:10px;background:var(--bg5);border-radius:12px;text-align:center;opacity:0.6;"><span style="font-size:16px;">🔒</span><span style="font-size:12px;">Reach Silver level (5 events) to unlock 10% discount</span></div>`}<div style="margin-bottom:15px;"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt2);margin-bottom:6px;"><span>Progress to next level</span><span>${prog.percentage.toFixed(0)}%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${prog.percentage}%;background:linear-gradient(90deg,${info.color},var(--green));"></div></div></div><div style="background:var(--bg5);border-radius:14px;padding:12px;margin-top:10px;"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;"><div><div style="font-size:12px;color:var(--txt3);">Next Level</div><div style="font-weight:700;color:var(--txt);">${prog.nextLevelName}</div></div><div style="text-align:right;"><div style="font-size:12px;color:var(--txt3);">Events needed</div><div style="font-weight:700;color:var(--accent);">${prog.needed>0?prog.needed:0} more events</div></div><div style="background:${info.color}20;padding:8px16px;border-radius:30px;"><span style="font-size:20px;">🎯</span><span style="font-weight:600;color:${info.color};">+${prog.needed>0?prog.needed:0}</span></div></div></div><div style="margin-top:15px;display:flex;gap:8px;flex-wrap:wrap;">${achievements.map(a=>`<span style="background:var(--accent-dim);padding:4px10px;border-radius:20px;font-size:11px;">${a}</span>`).join('')}</div><div style="margin-top:12px;"><button class="stats-modal-btn" onclick="showLevelStatsModal()"><i class="bi bi-graph-up"></i> View Statistics</button></div></div>`;
-}
-
-function showLevelStatsModal() {
-  if(!currentUser) return;
-  const regs=getAllRegistrationsForUser(currentUser.id), cnt=regs.length, info=getUserLevelInfo(cnt), prog=getProgressToNextLevel(cnt);
-  let upcoming=[];
-  document.querySelectorAll('.event-card').forEach(c=>{ const id=parseInt(c.dataset.id), date=c.dataset.date; if(regs.includes(id) && !isEventFinished(date)) upcoming.push({title:c.dataset.fullTitle,date}); });
-  const modalHTML=`<div class="modal-overlay active" id="levelStatsModal" style="z-index:2000;"><div class="modal-box" style="max-width:500px;"><div class="modal-head" style="background:linear-gradient(135deg,var(--accent),var(--accent2));"><h2><i class="bi bi-graph-up"></i> My Level Statistics</h2><p>Your event journey summary</p><button class="modal-x" onclick="closeLevelStatsModal()"><i class="bi bi-x-lg"></i></button></div><div class="modal-body"><div style="text-align:center;margin-bottom:20px;"><div style="font-size:48px;">${info.name.charAt(0)}</div><div style="font-size:20px;font-weight:800;color:${info.color};">${info.name}</div><div style="font-size:14px;color:var(--txt2);">${prog.nextLevelName}</div></div><div style="display:grid;grid-template-columns:1fr1fr;gap:12px;margin-bottom:20px;"><div style="background:var(--bg4);padding:15px;border-radius:14px;text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--accent);">${cnt}</div><div style="font-size:11px;color:var(--txt3);">Total Events</div></div><div style="background:var(--bg4);padding:15px;border-radius:14px;text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--green);">${prog.percentage.toFixed(0)}%</div><div style="font-size:11px;color:var(--txt3);">To Next Level</div></div></div>${upcoming.length?`<div style="margin-top:15px;"><div style="font-weight:700;margin-bottom:10px;color:var(--txt);">Your Upcoming Events</div><div style="max-height:250px;overflow-y:auto;">${upcoming.map(e=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid var(--border);"><div><div style="font-weight:600;font-size:13px;">${escapeHtml(e.title)}</div><div style="font-size:11px;color:var(--txt2);">${new Date(e.date).toLocaleDateString()}</div></div><div style="font-size:12px;color:var(--green);">✓ Registered</div></div>`).join('')}</div></div>`:'<p style="text-align:center;color:var(--txt3);">No upcoming events</p>'}<button onclick="closeLevelStatsModal()" class="btn-submit" style="width:100%;margin-top:20px;">Close</button></div></div></div>`;
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
-function closeLevelStatsModal() { const m=document.getElementById('levelStatsModal'); if(m) m.remove(); }
-function updateLevelProgressDisplay() {
-  if(!currentUser) return;
-  const regs=getAllRegistrationsForUser(currentUser.id), cnt=regs.length, dash=document.getElementById('userDashboard');
-  if(dash) { const old=document.getElementById('levelProgressCard'); if(old) old.remove(); const pc=document.createElement('div'); pc.innerHTML=createLevelProgressCard(cnt); const ds=dash.querySelector('.dashboard-stats'); if(ds) ds.insertAdjacentElement('afterend', pc.firstElementChild); }
-}
-
 function getFavoritesForUser(uid) { return JSON.parse(localStorage.getItem('eventhub_favorites')||'{}')[uid]||[]; }
 function saveFavoritesForUser(uid,favs) { let all=JSON.parse(localStorage.getItem('eventhub_favorites')||'{}'); all[uid]=favs; localStorage.setItem('eventhub_favorites',JSON.stringify(all)); }
 function updateFavCount() { let el=document.getElementById('favCount'); if(el) el.textContent=favorites.length; }
@@ -1117,7 +1424,7 @@ function updateDashboard() {
   let upcoming=[];
   document.querySelectorAll('.event-card').forEach(c=>{ let id=parseInt(c.dataset.id), date=c.dataset.date; if(regs.includes(id)&&!isEventFinished(date)) upcoming.push({id,title:c.dataset.fullTitle,date,location:c.dataset.location,startTime:c.dataset.startTime,endTime:c.dataset.endTime}); });
   if(!upcoming.length) { l.innerHTML='<div class="empty-dash"><i class="bi bi-calendar-check"></i>No upcoming events registered</div>'; return; }
-  l.innerHTML=upcoming.map(e=>`<div class="dash-event-card"><div class="dash-event-title">${escapeHtml(e.title)}</div><div class="dash-event-date"><i class="bi bi-calendar3"></i> ${new Date(e.date).toLocaleDateString()}</div><div class="dash-event-date"><i class="bi bi-geo-alt-fill"></i> ${escapeHtml(e.location)}</div><div style="margin-top:12px; display:flex; gap:8px;"><button class="stats-modal-btn ticket-btn" onclick="showEventTicket(${e.id}, '${escapeHtml(e.title).replace(/'/g, "\\'")}', '${e.date}', '${escapeHtml(e.location).replace(/'/g, "\\'")}', '${fmtTime(e.startTime)} - ${fmtTime(e.endTime)}')"><i class="bi bi-ticket-perforated"></i> Show Ticket</button></div></div>`).join('');
+  l.innerHTML=upcoming.map(e=>`<div class="dash-event-card"><div class="dash-event-title">${escapeHtml(e.title)}</div><div class="dash-event-date"><i class="bi bi-calendar3"></i> ${new Date(e.date).toLocaleDateString()}</div><div class="dash-event-date"><i class="bi bi-geo-alt-fill"></i> ${escapeHtml(e.location)}</div><div style="margin-top:12px; display:flex; gap:8px;"><button class="stats-modal-btn qr-btn" onclick="showQRCodeForEvent(${e.id}, '${escapeHtml(e.title).replace(/'/g, "\\'")}', '${e.date}', '${escapeHtml(e.location).replace(/'/g, "\\'")}', '${fmtTime(e.startTime)} - ${fmtTime(e.endTime)}')"><i class="bi bi-qr-code"></i> Show QR Code</button></div></div>`).join('');
 }
 
 function updateSidebarUI() {
@@ -1131,13 +1438,195 @@ function updateSidebarUI() {
   refreshAllFavBadgeStates();
 }
 
+// ============================================
+// CAROUSEL FUNCTIONS - SMALLER
+// ============================================
+function initCarousel() {
+  const track = document.getElementById('carouselTrack');
+  if (!track) return;
+  
+  const allCards = document.querySelectorAll('#eventsGrid .event-card');
+  if (allCards.length === 0) {
+    track.innerHTML = '<div class="empty-state" style="padding:40px;width:100%;"><i class="bi bi-calendar-x"></i><h3>No events available</h3></div>';
+    return;
+  }
+  
+  track.innerHTML = '';
+  const maxDisplay = Math.min(allCards.length, 12);
+  carouselEvents = Array.from(allCards).slice(0, maxDisplay);
+  
+  carouselEvents.forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.classList.remove('finished');
+    clone.onclick = function(e) {
+      if (!e.target.closest('.btn-reg') && !e.target.closest('.fav-badge') && !e.target.closest('.share-modal-btn') && !e.target.closest('.btn-cancel-reg') && !e.target.closest('.card-rating-mini') && !e.target.closest('.event-weather')) {
+        const orig = document.querySelector(`#eventsGrid .event-card[data-id="${clone.dataset.id}"]`);
+        if (orig) openDetail(orig);
+      }
+    };
+    const regBtn = clone.querySelector('.btn-reg');
+    if (regBtn) {
+      regBtn.onclick = function(e) {
+        e.stopPropagation();
+        const orig = document.querySelector(`#eventsGrid .event-card[data-id="${clone.dataset.id}"]`);
+        if (orig) {
+          const id = parseInt(orig.dataset.id);
+          handleCardRegClick(id, orig.dataset.fullTitle, orig.dataset.date, orig.dataset.startTime, orig.dataset.endTime, orig.dataset.location, parseFloat(orig.dataset.price)||0);
+        }
+      };
+    }
+    const favBtn = clone.querySelector('.fav-badge');
+    if (favBtn) {
+      favBtn.onclick = function(e) {
+        e.stopPropagation();
+        toggleFavorite(parseInt(clone.dataset.id));
+      };
+    }
+    const shareBtn = clone.querySelector('.share-modal-btn');
+    if (shareBtn) {
+      shareBtn.onclick = function(e) {
+        e.stopPropagation();
+        shareEvent(parseInt(clone.dataset.id), clone.dataset.fullTitle);
+      };
+    }
+    const cancelBtn = clone.querySelector('.btn-cancel-reg');
+    if (cancelBtn) {
+      cancelBtn.onclick = function(e) {
+        e.stopPropagation();
+        openCancelModal(parseInt(clone.dataset.id), clone.dataset.fullTitle);
+      };
+    }
+    const ratingBtn = clone.querySelector('.card-rating-mini');
+    if (ratingBtn) {
+      ratingBtn.onclick = function(e) {
+        e.stopPropagation();
+        const orig = document.querySelector(`#eventsGrid .event-card[data-id="${clone.dataset.id}"]`);
+        if (orig) openReviewsModal(parseInt(orig.dataset.id), orig.dataset.fullTitle);
+      };
+    }
+    const weatherBtn = clone.querySelector('.event-weather');
+    if (weatherBtn) {
+      weatherBtn.onclick = function(e) {
+        e.stopPropagation();
+        const orig = document.querySelector(`#eventsGrid .event-card[data-id="${clone.dataset.id}"]`);
+        if (orig) showWeatherPopup(parseInt(orig.dataset.id));
+      };
+    }
+    track.appendChild(clone);
+  });
+  
+  setupDots();
+  goToSlide(0);
+  startAutoScroll();
+  
+  track.addEventListener('mouseenter', pauseAutoScroll);
+  track.addEventListener('mouseleave', resumeAutoScroll);
+  track.addEventListener('touchstart', pauseAutoScroll);
+  track.addEventListener('touchend', resumeAutoScroll);
+}
+
+function setupDots() {
+  const dotsContainer = document.getElementById('carouselDots');
+  if (!dotsContainer) return;
+  
+  const totalSlides = carouselEvents.length;
+  
+  dotsContainer.innerHTML = '';
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    dot.dataset.index = i;
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+  }
+}
+
+function goToSlide(index) {
+  const track = document.getElementById('carouselTrack');
+  if (!track) return;
+  
+  const totalSlides = carouselEvents.length;
+  if (totalSlides === 0) return;
+  
+  if (index >= totalSlides) index = 0;
+  if (index < 0) index = totalSlides - 1;
+  
+  currentSlide = index;
+  
+  const offset = index * 100;
+  track.style.transform = `translateX(-${offset}%)`;
+  
+  document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+  
+  progressWidth = 0;
+  updateProgressBar();
+}
+
+function nextSlide() {
+  const totalSlides = carouselEvents.length;
+  if (totalSlides === 0) return;
+  goToSlide((currentSlide + 1) % totalSlides);
+}
+
+function prevSlide() {
+  const totalSlides = carouselEvents.length;
+  if (totalSlides === 0) return;
+  goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+}
+
+function updateProgressBar() {
+  const bar = document.getElementById('carouselProgressBar');
+  if (!bar) return;
+  bar.style.width = `${progressWidth}%`;
+}
+
+function startAutoScroll() {
+  if (carouselInterval) clearInterval(carouselInterval);
+  if (progressInterval) clearInterval(progressInterval);
+  
+  const intervalTime = 5000;
+  
+  carouselInterval = setInterval(() => {
+    if (!isCarouselPaused) {
+      nextSlide();
+    }
+  }, intervalTime);
+  
+  progressWidth = 0;
+  const step = 0.5;
+  progressInterval = setInterval(() => {
+    if (!isCarouselPaused) {
+      progressWidth += step;
+      if (progressWidth >= 100) {
+        progressWidth = 0;
+      }
+      updateProgressBar();
+    }
+  }, intervalTime / 200);
+}
+
+function pauseAutoScroll() {
+  isCarouselPaused = true;
+}
+
+function resumeAutoScroll() {
+  isCarouselPaused = false;
+  progressWidth = 0;
+  updateProgressBar();
+}
+
+// ============================================
+// USER SESSION FUNCTIONS
+// ============================================
 async function loadUserSession() {
   let stored=localStorage.getItem('eventhub_current_user');
   if(stored){
     currentUser=JSON.parse(stored);
     registered=getAllRegistrationsForUser(currentUser.id);
     favorites=getFavoritesForUser(currentUser.id);
-    updateAllRegistrationUI(); updateDashboard(); updateSidebarUI(); updateRegisteredTabVisibility(); updateGuestBannerAndButtons(); updateContactFormAccess(); updateFavCount(); updateCount(); updateLevelProgressDisplay(); getRecommendations();
+    updateAllRegistrationUI(); updateDashboard(); updateSidebarUI(); updateRegisteredTabVisibility(); updateGuestBannerAndButtons(); updateContactFormAccess(); updateFavCount(); updateCount(); getRecommendations();
   } else { currentUser=null; registered=[]; favorites=[]; updateAllRegistrationUI(); updateDashboard(); updateSidebarUI(); updateRegisteredTabVisibility(); updateGuestBannerAndButtons(); updateContactFormAccess(); updateFavCount(); updateCount(); refreshAllFavBadgeStates(); getRecommendations(); }
   loadWeatherForAllEvents(); updateFinishedEvents();
 }
@@ -1169,7 +1658,8 @@ async function loginUser(e){
       favorites=getFavoritesForUser(currentUser.id);
       closeLoginModal();
       toast('✅','Welcome back '+currentUser.name+'!');
-      updateDashboard(); updateRegisteredTabVisibility(); updateGuestBannerAndButtons(); updateSidebarUI(); applyFilters(); loadUserNotifications(); updateContactFormAccess(); updateAllRegistrationUI(); updateFavCount(); updateCount(); updateLevelProgressDisplay(); getRecommendations(); loadWeatherForAllEvents();
+      updateDashboard(); updateRegisteredTabVisibility(); updateGuestBannerAndButtons(); updateSidebarUI(); applyFilters(); loadUserNotifications(); updateContactFormAccess(); updateAllRegistrationUI(); updateFavCount(); updateCount(); getRecommendations(); loadWeatherForAllEvents();
+      setTimeout(initCarousel, 500);
     } else toast('❌',d.message||'Invalid credentials');
   }catch(e){ toast('❌','Network error'); }
 }
@@ -1186,6 +1676,7 @@ function logout() {
   document.getElementById('eventsGrid').style.display='grid';
   document.getElementById('favorites-section').style.display='none';
   applyFilters(); getRecommendations(); loadWeatherForAllEvents(); toast('👋','Logged out');
+  setTimeout(initCarousel, 500);
 }
 
 async function confirmCancel(){
@@ -1202,7 +1693,8 @@ async function confirmCancel(){
     calendarEvents=calendarEvents.filter(ce=>ce.eventId!==cancelTargetId);
     localStorage.setItem('eventhub_calendar_events',JSON.stringify(calendarEvents));
     unmarkRegistered(cancelTargetId);
-    updateCount(); updateDashboard(); closeCancelModal(); applyFilters(); updateLevelProgressDisplay(); getRecommendations(); toast('✅','Registration cancelled');
+    updateCount(); updateDashboard(); closeCancelModal(); applyFilters(); getRecommendations(); toast('✅','Registration cancelled');
+    setTimeout(initCarousel, 300);
   } catch(e){ toast('❌',e.message); } finally{ btn.disabled=false; btn.innerHTML=orig; }
 }
 
@@ -1297,7 +1789,8 @@ window.submitReg=async function(e){
       }
       markRegistered(currentEventId); updateCount(); closeModal();
       if(body.discount_applied&&body.discount_applied>0){ const lname=getUserLevelInfo(registered.length).name; toast('🎉',`You saved ${body.discount_applied}% with your ${lname} level!`); } else toast('🎉',d.message);
-      applyFilters(); updateDashboard(); updateFavUI(currentEventId,favorites.includes(currentEventId)); updateLevelProgressDisplay(); getRecommendations(); loadWeatherForAllEvents();
+      applyFilters(); updateDashboard(); updateFavUI(currentEventId,favorites.includes(currentEventId)); getRecommendations(); loadWeatherForAllEvents();
+      setTimeout(initCarousel, 300);
     } else toast('❌',d.message||'Registration failed');
   } catch(e){ toast('❌','Network error'); } finally{ btn.innerHTML=orig; btn.disabled=false; }
 };
@@ -1489,6 +1982,7 @@ function shareViaWhatsApp(){ const url=document.getElementById('shareLinkInput')
 function shareViaTwitter(){ const url=document.getElementById('shareLinkInput').value; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent('Check out '+shareEventTitle+' on EventHub!')}&url=${encodeURIComponent(url)}`,'_blank'); closeShareModal(); }
 function shareViaFacebook(){ const url=document.getElementById('shareLinkInput').value; window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,'_blank'); closeShareModal(); }
 function copyShareLink(){ const inp=document.getElementById('shareLinkInput'); inp.select(); document.execCommand('copy'); toast('🔗','Link copied to clipboard!'); }
+
 function getRecommendations(){
   const all=document.querySelectorAll('#eventsGrid .event-card'), cards=Array.from(all).filter(c=>!c.classList.contains('finished'));
   if(!currentUser||registered.length===0){ const shuffled=cards.sort(()=>0.5-Math.random()); renderRecommendations(shuffled.slice(0,5)); return; }
@@ -1505,11 +1999,24 @@ function renderRecommendations(recs){
   c.innerHTML=recs.map(card=>card.outerHTML).join('');
   c.querySelectorAll('.event-card').forEach(clone=>{ const oid=clone.dataset.id, orig=document.querySelector(`#eventsGrid .event-card[data-id="${oid}"]`); if(orig){ clone.onclick=()=>openDetail(orig); const fb=clone.querySelector('.fav-badge'); if(fb) fb.onclick=(e)=>{ e.stopPropagation(); toggleFavorite(parseInt(oid)); }; const rb=clone.querySelector('.btn-reg'); if(rb&&!rb.classList.contains('done')&&!orig.classList.contains('finished')){ rb.onclick=(e)=>{ e.stopPropagation(); const title=orig.dataset.fullTitle, date=orig.dataset.date, start=orig.dataset.startTime, end=orig.dataset.endTime, loc=orig.dataset.location, price=parseFloat(orig.dataset.price)||0; handleCardRegClick(parseInt(oid),title,date,start,end,loc,price); }; } } });
 }
+
+// ============================================
+// DOM READY
+// ============================================
 document.addEventListener('DOMContentLoaded', async ()=>{
   let savedTheme=localStorage.getItem('eh-theme');
   if(savedTheme) document.documentElement.setAttribute('data-theme',savedTheme);
   await loadUserSession();
   setupFilters(); sortCards(); updateRegisteredTabVisibility(); updateGuestBannerAndButtons(); updateContactFormAccess(); refreshAllFavBadgeStates(); updateFinishedEvents();
+  
+  setTimeout(initCarousel, 800);
+  
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {}, 250);
+  });
+  
   document.querySelectorAll('.card-rating-mini').forEach(star=>{
     star.removeEventListener('click',star._handler);
     star._handler=function(e){ e.stopPropagation(); if(this.classList.contains('disabled')){ if(!currentUser) toast('🔐','Login required'); else toast('📝','You must register for this event first'); return; } let card=this.closest('.event-card'); if(card){ let id=card.dataset.id, title=card.dataset.fullTitle; if(id&&!isNaN(parseInt(id))) openReviewsModal(parseInt(id),title); } };

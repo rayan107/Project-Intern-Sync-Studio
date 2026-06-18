@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -64,7 +65,7 @@
         .mobile-overlay.active { display: block; }
         .nav-menu { list-style: none; padding: 20px 0; flex: 1; min-width: var(--sidebar-width); }
         .nav-item { margin-bottom: 5px; }
-        .nav-link { display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: all 0.3s; border-left: 3px solid transparent; white-space: nowrap; font-size: 15px; font-weight: 500; border-radius: 0 8px 8px 0; margin-right: 12px; }
+        .nav-link { display: flex; align-items: center; gap: 14px; padding: 14px 28px; color: #94a3b8; text-decoration: none; transition: all 0.3s; border-left: 3px solid transparent; white-space: nowrap; font-size: 15px; font-weight: 500; border-radius: 0 8px 8px 0; margin-right: 12px; cursor: pointer; }
         .nav-link:hover { background: rgba(102,126,234,0.12); color: #fff; border-left-color: #667eea; transform: translateX(4px); }
         .nav-link.active { background: rgba(102,126,234,0.18); color: #fff; border-left-color: #a78bfa; box-shadow: 0 4px 15px rgba(102,126,234,0.2); }
         .nav-icon { font-size: 20px; width: 26px; text-align: center; }
@@ -151,7 +152,64 @@
         .btn-secondary { background: rgba(100,116,139,0.3) !important; border: 1px solid rgba(255,255,255,0.15) !important; color: #e2e8f0 !important; padding: 10px 24px; border-radius: 10px; }
         .admin-avatar-small { width: 36px; height: 36px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
         
-        /* RESPONSIVE STYLES */
+        /* QR Scanner Modal */
+        .qr-scanner-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .qr-scanner-box {
+            background: #1e293b;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 500px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .qr-scanner-box h3 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        #qr-result {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            display: none;
+        }
+        .qr-success {
+            background: rgba(34,216,122,0.2);
+            border: 1px solid #22d87a;
+            color: #22d87a;
+        }
+        .qr-error {
+            background: rgba(255,77,109,0.2);
+            border: 1px solid #ff4d6d;
+            color: #ff4d6d;
+        }
+        .btn-close-scanner {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+        
         @media (max-width: 1200px) { 
             .stats-row { grid-template-columns: repeat(2, 1fr); } 
         }
@@ -177,7 +235,7 @@
             .admin-table { min-width: 650px; } 
             .admin-table th, .admin-table td { padding: 10px 12px; font-size: 12px; } 
             .btn-sm { padding: 5px 10px; font-size: 10px; } 
-            .btn-create { padding: 8px 18px; font-size: 12px; } 
+            .btn-create { padding: 8px 18px; font-size: 12px; }
             .btn-logout { padding: 8px 14px; font-size: 12px; } 
             .modal-body { padding: 1rem; } 
             .modal-header { padding: 1rem 1.5rem; } 
@@ -190,7 +248,7 @@
             .content-area { padding: 12px; } 
             .stat-value { font-size: 28px; } 
             .topbar-right { width: 100%; justify-content: space-between; } 
-            .btn-create { width: 100%; justify-content: center; margin-bottom: 8px; } 
+            .btn-create { width: 100%; justify-content: center; margin-bottom: 8px; }
         }
         @media (max-width: 480px) { 
             .content-area { padding: 10px; } 
@@ -224,6 +282,16 @@
             <span>Dashboard</span>
         </a>
     </li>
+    
+    <!-- QR SCANNER BUTTON - Only show if user has scan_qr_codes permission -->
+    @if($currentAdmin->can('scan_qr_codes'))
+    <li class="nav-item">
+        <a href="#" onclick="openQRScanner()" class="nav-link">
+            <span class="nav-icon"><i class="fas fa-qrcode"></i></span>
+            <span>Scan QR Code</span>
+        </a>
+    </li>
+    @endif
     
     @if($currentAdmin->can('view_events'))
     <li class="nav-item">
@@ -486,10 +554,11 @@
     const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
     let adminModalObj, viewPermsModalObj;
     let currentCustomPerms = [];
+    let html5QrCode = null;
 
     const roleDefaults = {
-        super_admin: ['view_dashboard','view_events','create_events','edit_events','delete_events','view_users','manage_users','view_admins','manage_admins','view_reviews','delete_reviews','view_messages','delete_messages','view_reports'],
-        events_manager: ['view_dashboard','view_events','create_events','edit_events','delete_events','view_reviews','delete_reviews','view_messages','delete_messages','view_reports'],
+        super_admin: ['view_dashboard','view_events','create_events','edit_events','delete_events','view_users','manage_users','view_admins','manage_admins','view_reviews','delete_reviews','view_messages','delete_messages','view_reports','scan_qr_codes'],
+        events_manager: ['view_dashboard','view_events','create_events','edit_events','delete_events','view_reviews','delete_reviews','view_messages','delete_messages','view_reports','scan_qr_codes'],
         viewer: ['view_dashboard','view_events','view_users','view_reviews','view_messages','view_reports'],
         custom: []
     };
@@ -498,15 +567,74 @@
         {value:'edit_events',label:'Edit Events',col:1},{value:'delete_events',label:'Delete Events',col:1},{value:'view_users',label:'View Users',col:2},
         {value:'manage_users',label:'Manage Users',col:2},{value:'view_admins',label:'View Admins',col:2},{value:'manage_admins',label:'Manage Admins',col:2},
         {value:'view_reviews',label:'View Reviews',col:1},{value:'delete_reviews',label:'Delete Reviews',col:1},{value:'view_messages',label:'View Messages',col:2},
-        {value:'delete_messages',label:'Delete Messages',col:2},{value:'view_reports',label:'View Reports',col:2}
+        {value:'delete_messages',label:'Delete Messages',col:2},{value:'view_reports',label:'View Reports',col:2},
+        {value:'scan_qr_codes',label:'Scan QR Codes',col:1}
     ];
     const GROUP_PERMS = [
         {value:'manage_events',label:'View & Manage Events',col:1, perms:['view_events','create_events','edit_events','delete_events']},
         {value:'manage_users',label:'View & Manage Users',col:2, perms:['view_users','manage_users']},
         {value:'manage_admins',label:'View & Manage Admins',col:2, perms:['view_admins','manage_admins']},
         {value:'manage_reviews',label:'View & Delete Reviews',col:1, perms:['view_reviews','delete_reviews']},
-        {value:'manage_messages',label:'View & Delete Messages',col:2, perms:['view_messages','delete_messages']}
+        {value:'manage_messages',label:'View & Delete Messages',col:2, perms:['view_messages','delete_messages']},
+        {value:'scan_qr_codes',label:'Scan QR Codes',col:1, perms:['scan_qr_codes']}
     ];
+
+    // ============ QR SCANNER FUNCTIONS ============
+    function openQRScanner() {
+        const modalHtml = `
+            <div id="qrScannerModal" class="qr-scanner-modal">
+                <div class="qr-scanner-box">
+                    <h3><i class="fas fa-qrcode"></i> Scan QR Code</h3>
+                    <div id="qr-reader"></div>
+                    <div id="qr-result"></div>
+                    <button class="btn-close-scanner" onclick="closeQRScanner()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        if (typeof Html5Qrcode !== 'undefined') {
+            html5QrCode = new Html5Qrcode("qr-reader");
+            const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+                html5QrCode.stop();
+                
+                const resultDiv = document.getElementById('qr-result');
+                resultDiv.style.display = 'block';
+                
+                if (decodedText.includes('/checkin/')) {
+                    resultDiv.innerHTML = `<div class="qr-success" style="padding: 12px; border-radius: 12px;">✅ QR Code detected! Redirecting...</div>`;
+                    window.location.href = decodedText;
+                } else {
+                    resultDiv.innerHTML = `<div class="qr-error" style="padding: 12px; border-radius: 12px;">⚠️ Invalid check-in QR code. Please scan a valid EventHub QR code.</div>`;
+                    setTimeout(() => {
+                        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, qrCodeSuccessCallback);
+                        resultDiv.style.display = 'none';
+                    }, 3000);
+                }
+            };
+            
+            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, qrCodeSuccessCallback)
+                .catch(err => {
+                    document.getElementById('qr-result').innerHTML = `<div class="qr-error" style="padding: 12px; border-radius: 12px;">❌ Cannot access camera. Please allow camera permissions.</div>`;
+                    document.getElementById('qr-result').style.display = 'block';
+                });
+        } else {
+            document.getElementById('qr-result').innerHTML = `<div class="qr-error" style="padding: 12px; border-radius: 12px;">❌ QR scanner library not loaded. Please refresh the page.</div>`;
+            document.getElementById('qr-result').style.display = 'block';
+        }
+    }
+    
+    function closeQRScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().catch(err => console.log('Stop error:', err));
+            html5QrCode = null;
+        }
+        const modal = document.getElementById('qrScannerModal');
+        if (modal) modal.remove();
+    }
 
     function renderPermsByRole(){
         const role = document.getElementById('adminRoleSelect').value;
@@ -731,6 +859,8 @@
     });
     window.filterAdmins = filterAdmins;
     window.openCreateModal = openCreateModal;
+    window.openQRScanner = openQRScanner;
+    window.closeQRScanner = closeQRScanner;
 </script>
 </body>
 </html>

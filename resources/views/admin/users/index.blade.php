@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
 
@@ -179,6 +180,7 @@
             margin-right: 12px;
             font-size: 15px;
             font-weight: 500;
+            cursor: pointer;
         }
         .nav-link:hover, .nav-link.active {
             background: rgba(102, 126, 234, 0.12);
@@ -376,6 +378,64 @@
             to { transform: translateX(100%); opacity: 0; }
         }
 
+        /* QR Scanner Modal */
+        .qr-scanner-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .qr-scanner-box {
+            background: #1e293b;
+            border-radius: 28px;
+            width: 90%;
+            max-width: 500px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .qr-scanner-box h3 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        #qr-result {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            display: none;
+        }
+        .qr-success {
+            background: rgba(34,216,122,0.2);
+            border: 1px solid #22d87a;
+            color: #22d87a;
+        }
+        .qr-error {
+            background: rgba(255,77,109,0.2);
+            border: 1px solid #ff4d6d;
+            color: #ff4d6d;
+        }
+        .btn-close-scanner {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+
         @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 992px) { 
             .content-area { padding: 24px; } 
@@ -428,6 +488,14 @@
         <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
             <span>Dashboard</span>
+        </a>
+    </li>
+    
+    <!-- QR SCANNER BUTTON - ADDED HERE -->
+    <li class="nav-item">
+        <a href="#" onclick="openQRScanner()" class="nav-link">
+            <span class="nav-icon"><i class="fas fa-qrcode"></i></span>
+            <span>Scan QR Code</span>
         </a>
     </li>
     
@@ -782,6 +850,68 @@
 
     window.filterUsers = filterUsers;
     window.deleteUser = deleteUser;
+
+    // ============ QR SCANNER FUNCTIONS ============
+    let html5QrCode = null;
+
+    function openQRScanner() {
+        const modalHtml = `
+            <div id="qrScannerModal" class="qr-scanner-modal">
+                <div class="qr-scanner-box">
+                    <h3><i class="fas fa-qrcode"></i> Scan QR Code</h3>
+                    <div id="qr-reader"></div>
+                    <div id="qr-result"></div>
+                    <button class="btn-close-scanner" onclick="closeQRScanner()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+        if (typeof Html5Qrcode !== 'undefined') {
+            html5QrCode = new Html5Qrcode("qr-reader");
+            const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+                html5QrCode.stop();
+                
+                const resultDiv = document.getElementById('qr-result');
+                resultDiv.style.display = 'block';
+                
+                if (decodedText.includes('/checkin/')) {
+                    resultDiv.innerHTML = `<div class="qr-success" style="padding: 12px; border-radius: 12px;">✅ QR Code detected! Redirecting...</div>`;
+                    window.location.href = decodedText;
+                } else {
+                    resultDiv.innerHTML = `<div class="qr-error" style="padding: 12px; border-radius: 12px;">⚠️ Invalid check-in QR code. Please scan a valid EventHub QR code.</div>`;
+                    setTimeout(() => {
+                        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, qrCodeSuccessCallback);
+                        resultDiv.style.display = 'none';
+                    }, 3000);
+                }
+            };
+            
+            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, qrCodeSuccessCallback)
+                .catch(err => {
+                    document.getElementById('qr-result').innerHTML = `<div class="qr-error" style="padding: 12px; border-radius: 12px;">❌ Cannot access camera. Please allow camera permissions.</div>`;
+                    document.getElementById('qr-result').style.display = 'block';
+                });
+        } else {
+            document.getElementById('qr-result').innerHTML = `<div class="qr-error" style="padding: 12px; border-radius: 12px;">❌ QR scanner library not loaded. Please refresh the page.</div>`;
+            document.getElementById('qr-result').style.display = 'block';
+        }
+    }
+    
+    function closeQRScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().catch(err => console.log('Stop error:', err));
+            html5QrCode = null;
+        }
+        const modal = document.getElementById('qrScannerModal');
+        if (modal) modal.remove();
+    }
+    
+    window.openQRScanner = openQRScanner;
+    window.closeQRScanner = closeQRScanner;
 </script>
 </body>
 </html>
