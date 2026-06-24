@@ -203,6 +203,58 @@ Route::get('/scan', function () {
     return view('admin.scan');
 })->name('admin.scan')->middleware('auth:admin');
 
+// ============ FIX CHECK-IN DATA (MANUAL) ============
+Route::get('/admin/fix-checkin/{eventId}/{userId}', function($eventId, $userId) {
+    $checkinTime = Carbon::now('Asia/Beirut');
+    
+    // تحديث البيانات
+    DB::table('event_user')
+        ->where('event_id', $eventId)
+        ->where('user_id', $userId)
+        ->update([
+            'checked_in_at' => $checkinTime,
+            'status' => 'present',
+            'updated_at' => now()
+        ]);
+    
+    // جلب البيانات بعد التحديث
+    $updated = DB::table('event_user')
+        ->where('event_id', $eventId)
+        ->where('user_id', $userId)
+        ->first();
+    
+    // سجل في الـ Log
+    \Log::info('Manual check-in fixed', [
+        'event_id' => $eventId,
+        'user_id' => $userId,
+        'checked_in_at' => $updated->checked_in_at ?? null,
+        'status' => $updated->status ?? null
+    ]);
+    
+    return response()->json([
+        'success' => true,
+        'message' => '✅ Check-in data fixed!',
+        'data' => $updated
+    ]);
+})->middleware('auth:admin');
+
+// ============ FIX ALL CHECK-INS (Fix all users with status=present but no time) ============
+Route::get('/admin/fix-all-checkins', function() {
+    $count = DB::table('event_user')
+        ->where('status', 'present')
+        ->whereNull('checked_in_at')
+        ->update([
+            'checked_in_at' => DB::raw('updated_at'),
+            'updated_at' => now()
+        ]);
+    
+    return response()->json([
+        'success' => true,
+        'message' => "✅ Fixed {$count} check-ins!",
+        'fixed_count' => $count
+    ]);
+})->middleware('auth:admin');
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ROUTES (FOR FRONTEND USERS)
@@ -330,7 +382,21 @@ Route::get('/api/events/attendees-count', function() {
         'success' => true,
         'counts' => $counts
     ]);
-});
+})->middleware('auth:admin');
+
+// ============ REAL-TIME UPDATES FOR ADMIN ============
+Route::get('/api/admin/events/counts', function() {
+    $events = \App\Models\Event::withCount('users')->get();
+    $counts = [];
+    foreach ($events as $event) {
+        $counts[$event->id] = $event->users_count;
+    }
+    return response()->json([
+        'success' => true,
+        'counts' => $counts,
+        'total_registrations' => \Illuminate\Support\Facades\DB::table('event_user')->count()
+    ]);
+})->middleware('auth:admin');
 
 // ============ LANGUAGE SWITCH ============
 Route::post('/switch-language/{locale}', function ($locale) {

@@ -164,52 +164,45 @@ class EventController extends Controller
     }
 
     // ============ FIXED: Get registrations with user data AND STATUS ============
-    public function registrations(Event $event)
+    // ============ FIXED: Get registrations with user data AND STATUS ============
+// ============ FIXED: Get registrations with user data ============
+// ============ FIXED: Get registrations with fallback for missing columns ============
+// ============ FIXED: Get registrations with check-in status ============
+public function registrations(Event $event)
 {
-    $registrations = DB::table('event_user')
-        ->where('event_id', $event->id)
-        ->join('users', 'event_user.user_id', '=', 'users.id')
-        ->select(
-            'users.id',
-            'users.name',
-            'users.email',
-            'event_user.registered_at',
-            'event_user.created_at as registered_at_fallback',
-            'event_user.checked_in_at',
-            'event_user.status',
-            'event_user.cancelled_at'
-        )
-        ->get();
+    try {
+        // ✅ جلب البيانات مباشرة من event_user مع users
+        $registrations = DB::table('event_user')
+            ->where('event_id', $event->id)
+            ->join('users', 'event_user.user_id', '=', 'users.id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'event_user.registered_at',
+                'event_user.checked_in_at',
+                'event_user.status',
+                'event_user.cancelled_at'
+            )
+            ->get();
 
-    foreach ($registrations as $reg) {
-        // Set registered_at
-        if (empty($reg->registered_at)) {
-            $reg->registered_at = $reg->registered_at_fallback;
-        }
-        unset($reg->registered_at_fallback);
+        // ✅ Log للتحقق
+        \Log::info('Registrations fetched', [
+            'event_id' => $event->id,
+            'count' => $registrations->count(),
+            'data' => $registrations->toArray()
+        ]);
+
+        return response()->json($registrations);
         
-        // Determine status if not set
-        if (empty($reg->status)) {
-            if ($reg->checked_in_at) {
-                $reg->status = 'present';
-            } elseif ($reg->cancelled_at) {
-                $reg->status = 'cancelled';
-            } else {
-                $reg->status = 'registered';
-            }
-        }
-        
-        // ============ FIX: Convert UTC to Local Time ============
-        if ($reg->checked_in_at) {
-            $reg->checked_in_at = \Carbon\Carbon::parse($reg->checked_in_at)
-                ->timezone('Asia/Beirut')  // Convert to Lebanon timezone
-                ->toISOString();
-        }
+    } catch (\Exception $e) {
+        \Log::error('Registrations error: ' . $e->getMessage());
+        return response()->json([
+            'error' => 'Failed to load registrations',
+            'message' => $e->getMessage()
+        ], 500);
     }
-
-    return response()->json($registrations);
 }
-
     public function cancel($id)
     {
         $user = auth('web')->user(); 

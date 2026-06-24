@@ -55,11 +55,11 @@ class User extends Authenticatable
 // app/Models/User.php
 //Model User
  public function events()
-    {
-        return $this->belongsToMany(Event::class, 'event_user')
-                    ->withPivot('registered_at')
-                    ->withTimestamps();
-    }
+{
+    return $this->belongsToMany(Event::class, 'event_user')
+                ->withPivot('registered_at', 'checked_in_at', 'status', 'cancelled_at')
+                ->withTimestamps();
+}
 
 //Model Event  
 public function users()

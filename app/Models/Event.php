@@ -45,13 +45,12 @@ class Event extends Model
     /**
      * Get the users registered for the event.
      */
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'event_user')
-                    ->withPivot('name', 'email', 'registered_at')
-                    ->withTimestamps();
-    }
-
+   public function users()
+{
+    return $this->belongsToMany(User::class, 'event_user')
+                ->withPivot('registered_at', 'checked_in_at', 'status', 'cancelled_at')
+                ->withTimestamps();
+}
     /**
      * Get the reviews for the event.
      */

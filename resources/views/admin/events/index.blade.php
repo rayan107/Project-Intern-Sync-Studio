@@ -393,14 +393,16 @@
             margin-right: 6px;
         }
 
-        /* Attendee items with status */
+        /* Attendee items with status - Enhanced */
         #viewAttendeesList .attendee-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 14px;
+            padding: 12px 14px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             transition: background 0.2s;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         #viewAttendeesList .attendee-item:hover {
             background: rgba(255,255,255,0.03);
@@ -408,17 +410,30 @@
         #viewAttendeesList .attendee-item:last-child {
             border-bottom: none;
         }
+        #viewAttendeesList .attendee-item .user-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 150px;
+        }
         #viewAttendeesList .attendee-item .name {
             color: #e2e8f0;
             font-weight: 500;
+            font-size: 14px;
         }
         #viewAttendeesList .attendee-item .email {
             color: #94a3b8;
             font-size: 12px;
         }
+        #viewAttendeesList .attendee-item .status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         #viewAttendeesList .attendee-item .status-badge-sm {
             font-size: 10px;
-            padding: 3px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-weight: 600;
             white-space: nowrap;
@@ -436,9 +451,17 @@
             color: #f87171;
         }
         #viewAttendeesList .attendee-item .checkin-time {
-            font-size: 10px;
+            font-size: 11px;
             color: #94a3b8;
-            margin-left: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 3px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            white-space: nowrap;
+        }
+        #viewAttendeesList .attendee-item .checkin-time i {
+            color: #4ade80;
+            margin-right: 4px;
         }
 
         #viewAttendeesList::-webkit-scrollbar {
@@ -458,8 +481,13 @@
                 grid-template-columns: 1fr;
             }
             #viewAttendeesList .attendee-item {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 5px;
+            }
+            #viewAttendeesList .attendee-item .status-info {
+                width: 100%;
+                justify-content: flex-start;
             }
         }
         
@@ -468,6 +496,34 @@
         @media (max-width: 768px) { .content-area { padding: 16px; } .topbar { padding: 12px 16px; } .topbar-left h2 { font-size: 18px; } .topbar-right { gap: 10px; } .user-details { display: none; } .stats-row { grid-template-columns: 1fr; gap: 14px; } .stat-card { padding: 20px 18px; } .stat-value { font-size: 32px; } .stat-icon { width: 40px; height: 40px; font-size: 18px; } .panel-header { padding: 14px 16px; } .panel-header h4 { font-size: 16px; } .search-box { max-width: 100%; } .custom-table { min-width: 650px; } .custom-table th, .custom-table td { padding: 10px 12px; font-size: 12px; } .btn-sm { padding: 5px 10px; font-size: 10px; } .btn-create, .btn-messages-top { padding: 8px 18px; font-size: 12px; } .btn-logout { padding: 8px 14px; font-size: 12px; } .modal-body { padding: 1rem; } .modal-header { padding: 1rem 1.5rem; } .modal-footer { padding: 1rem 1.5rem; } .form-control, .form-select { font-size: 16px; } .user-info { padding: 6px 12px; } .user-avatar { width: 36px; height: 36px; font-size: 13px; } .message-subject, .message-content, .message-actions { padding-left: 0; } .message-sender { margin-bottom: 8px; } .message-header { flex-direction: column; align-items: flex-start; } .qr-info-grid { grid-template-columns: 1fr; } }
         @media (max-width: 576px) { .content-area { padding: 12px; } .stat-value { font-size: 28px; } .topbar-right { width: 100%; justify-content: space-between; } .btn-create, .btn-messages-top { width: 100%; justify-content: center; margin-bottom: 8px; } .qr-scanner-box { padding: 16px; } }
         @media (max-width: 480px) { .content-area { padding: 10px; } .stat-card { padding: 16px 14px; } .stat-value { font-size: 24px; } .stat-label { font-size: 10px; } .btn-sm { padding: 4px 8px; font-size: 9px; margin: 1px; } .custom-table { min-width: 550px; } .custom-table th, .custom-table td { padding: 8px 10px; font-size: 11px; } }
+
+        /* ============ REFRESH BUTTON STYLES ============ */
+        .btn-refresh-counts {
+            background: rgba(102,126,234,0.2);
+            border: 1px solid #667eea;
+            color: #a78bfa;
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        .btn-refresh-counts:hover {
+            background: rgba(102,126,234,0.4);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.3);
+        }
+        .btn-refresh-counts:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn-refresh-counts i {
+            margin-right: 6px;
+        }
     </style>
 </head>
 <body>
@@ -524,17 +580,17 @@
         <div class="stats-row">
             <div class="stat-card blue">
                 <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-                <div class="stat-value">{{ $stats['totalEvents'] ?? $events->total() }}</div>
+                <div class="stat-value" id="totalEvents">{{ $stats['totalEvents'] ?? $events->total() }}</div>
                 <div class="stat-label">Total Events</div>
             </div>
             <div class="stat-card green">
                 <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-value">{{ $stats['totalRegistrations'] ?? 0 }}</div>
+                <div class="stat-value" id="totalRegistrations">{{ $stats['totalRegistrations'] ?? 0 }}</div>
                 <div class="stat-label">Total Registrations</div>
             </div>
             <div class="stat-card orange">
                 <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
-                <div class="stat-value">{{ $stats['upcomingEvents'] ?? 0 }}</div>
+                <div class="stat-value" id="upcomingEvents">{{ $stats['upcomingEvents'] ?? 0 }}</div>
                 <div class="stat-label">Upcoming Events</div>
             </div>
             <div class="stat-card purple">
@@ -545,19 +601,30 @@
         </div>
 
         <div class="panel">
-            <div class="panel-header"><h4><i class="fas fa-list me-2"></i> All Events</h4><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="Search events..." onkeyup="filterEvents()"></div></div>
+            <div class="panel-header">
+                <h4><i class="fas fa-list me-2"></i> All Events</h4>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-refresh-counts" id="refreshCountsBtn" onclick="refreshCounts()">
+                        <i class="fas fa-sync-alt"></i> Refresh Counts
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search events..." onkeyup="filterEvents()">
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="custom-table">
                     <thead><tr><th>ID</th><th>Event</th><th>Date & Time</th><th>Location</th><th>Price</th><th>Registrations</th><th>Actions</th></tr></thead>
                     <tbody id="eventsTableBody">
                         @forelse($events as $event)
-                        <tr class="event-row" data-name="{{ strtolower($event->title) }}" data-location="{{ strtolower($event->location) }}">
+                        <tr class="event-row" data-name="{{ strtolower($event->title) }}" data-location="{{ strtolower($event->location) }}" data-event-id="{{ $event->id }}">
                             <td><strong style="color:#a78bfa;">#{{ $event->id }}</strong></td>
                             <td><strong>{{ $event->title }}</strong><br><small class="text-muted">{{ Str::limit($event->description, 40) }}</small></td>
                             <td>{{ \Carbon\Carbon::parse($event->event_date)->format('M d, Y') }}<br><small>{{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('g:i A') }}</small></td>
                             <td><i class="fas fa-map-marker-alt" style="color:#f87171;"></i> {{ $event->location }}</td>
                             <td>@if($event->price > 0)<span class="badge paid">${{ number_format($event->price, 2) }}</span>@else<span class="badge free">Free</span>@endif</td>
-                            <td><span class="badge-reg"><i class="fas fa-users"></i> {{ $event->users_count ?? 0 }}</span></td>
+                            <td><span class="badge-reg" id="count-{{ $event->id }}"><i class="fas fa-users"></i> {{ $event->users_count ?? 0 }}</span></td>
                             <td>
                                 <button class="btn-sm btn-view view-btn" data-event-id="{{ $event->id }}" data-event-title="{{ $event->title }}"><i class="fas fa-eye"></i> View</button>
                                 <button class="btn-sm btn-edit edit-btn" data-event-id="{{ $event->id }}" data-title="{{ $event->title }}" data-description="{{ $event->description }}" data-date="{{ $event->event_date }}" data-start-time="{{ $event->start_time }}" data-end-time="{{ $event->end_time }}" data-price="{{ $event->price }}" data-location="{{ $event->location }}"><i class="fas fa-edit"></i> Edit</button>
@@ -638,13 +705,13 @@
                             </div>
                         </div>
 
-                        <!-- Attendees List with Status -->
+                        <!-- Attendees List with Status - Enhanced with Check-in Time -->
                         <div style="background: rgba(34,197,94,0.06); padding: 20px; border-radius: 16px; border: 1px solid rgba(34,197,94,0.15); margin-top: 20px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                                 <h6 style="color: #94a3b8; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">
                                     <i class="fas fa-user-check"></i> Attendees List
                                 </h6>
-                                <div style="display: flex; gap: 10px; font-size: 11px;">
+                                <div style="display: flex; gap: 10px; font-size: 11px; flex-wrap: wrap;">
                                     <span style="color: #4ade80;"><i class="fas fa-circle"></i> Checked In</span>
                                     <span style="color: #fbbf24;"><i class="fas fa-circle"></i> Registered</span>
                                     <span style="color: #f87171;"><i class="fas fa-circle"></i> Cancelled</span>
@@ -763,6 +830,81 @@
         }
     }
 
+    // ============ REAL-TIME UPDATES FOR REGISTRATION COUNTS ============
+    function updateRegistrationsCounts() {
+        fetch('/api/admin/events/counts', {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // 1. تحديث عدد المسجلين لكل Event
+                document.querySelectorAll('.badge-reg').forEach(badge => {
+                    const row = badge.closest('tr');
+                    if (row) {
+                        const eventId = row.getAttribute('data-event-id');
+                        if (eventId && data.counts[eventId] !== undefined) {
+                            badge.innerHTML = `<i class="fas fa-users"></i> ${data.counts[eventId]}`;
+                        }
+                    }
+                });
+                
+                // 2. تحديث Total Registrations في الـ Stats
+                const totalRegElement = document.getElementById('totalRegistrations');
+                if (totalRegElement && data.total_registrations !== undefined) {
+                    totalRegElement.textContent = data.total_registrations;
+                }
+            }
+        })
+        .catch(error => {
+            // Silent fail - don't show errors to user
+            console.log('Update check failed:', error);
+        });
+    }
+
+    // ============ REFRESH COUNTS (Manual) ============
+    function refreshCounts() {
+        const btn = document.getElementById('refreshCountsBtn');
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        
+        updateRegistrationsCounts();
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            showToast('🔄 Counts updated successfully!', 'success');
+        }, 1500);
+    }
+
+    // ============ AUTO UPDATE EVERY 10 SECONDS ============
+    let updateInterval = setInterval(updateRegistrationsCounts, 10000);
+
+    // تحديث فوري عند فتح الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(updateRegistrationsCounts, 2000);
+    });
+
+    // وقف التحديث إذا الصفحة غير ظاهرة (تحسين الأداء)
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            clearInterval(updateInterval);
+        } else {
+            updateInterval = setInterval(updateRegistrationsCounts, 10000);
+            updateRegistrationsCounts(); // تحديث فوري عند العودة
+        }
+    });
+
     // ============ VIEW EVENT DETAILS ============
     async function viewEventDetails(eventId) {
         document.getElementById('viewLoading').style.display = 'block';
@@ -843,8 +985,9 @@
         }
     }
 
-    // ============ FIXED: loadAttendeesWithStatus with correct time from database ============
-    async function loadAttendeesWithStatus(eventId) {
+    // ============ ENHANCED: loadAttendeesWithStatus with Check-in Time ============
+    // ============ ENHANCED: loadAttendeesWithStatus with Check-in Time ============
+async function loadAttendeesWithStatus(eventId) {
     try {
         const response = await fetch(`/admin/events/${eventId}/registrations`, {
             headers: {
@@ -856,6 +999,8 @@
         if (response.ok) {
             const attendees = await response.json();
             const list = document.getElementById('viewAttendeesList');
+            
+            console.log('Attendees data:', attendees); // ✅ للتحقق
             
             if (!attendees || !attendees.length) {
                 list.innerHTML = `
@@ -870,45 +1015,62 @@
             list.innerHTML = attendees.map((user) => {
                 let status = user.status || 'registered';
                 let checkedInAt = user.checked_in_at || null;
-                
-                if (!user.status && user.checked_in_at) {
-                    status = 'present';
-                    checkedInAt = user.checked_in_at;
-                }
-                
-                if (!user.status && user.cancelled_at) {
-                    status = 'cancelled';
-                }
-                
-                let badgeHtml = '';
                 let statusText = '';
                 let statusClass = '';
+                let checkinTimeHtml = '';
                 
-                if (status === 'present' || status === 'checked_in') {
+                console.log(`User: ${user.name}, Status: ${status}, CheckedIn: ${checkedInAt}`); // ✅ للتحقق
+                
+                // تحديد الحالة
+                if (status === 'present' || status === 'checked_in' || status === 'checked-in') {
                     statusClass = 'present';
                     statusText = '✅ Checked In';
                     
+                    // عرض وقت وتاريخ الـ Check-in
                     if (checkedInAt) {
                         try {
-                            const date = new Date(checkedInAt);
+                            // ✅ تأكد من إنو الوقت موجود
+                            console.log('CheckedInAt raw:', checkedInAt);
                             
+                            const date = new Date(checkedInAt);
                             if (!isNaN(date.getTime())) {
-                                // ============ FIX: Use local timezone ============
                                 const options = {
-                                    month: 'short',
+                                    weekday: 'short',
+                                    month: 'short', 
                                     day: 'numeric',
                                     year: 'numeric',
                                     hour: '2-digit',
                                     minute: '2-digit',
+                                    second: '2-digit',
                                     hour12: true,
-                                    timeZone: 'Asia/Beirut'  // Force Lebanon timezone
+                                    timeZone: 'Asia/Beirut'
                                 };
                                 const formattedDate = date.toLocaleString('en-US', options);
-                                statusText += ` on ${formattedDate}`;
+                                checkinTimeHtml = `<span class="checkin-time"><i class="fas fa-clock"></i> ${formattedDate}</span>`;
+                            } else {
+                                // إذا التاريخ مش صحيح، عرض النص كما هو
+                                checkinTimeHtml = `<span class="checkin-time"><i class="fas fa-clock"></i> ${checkedInAt}</span>`;
                             }
                         } catch (e) {
-                            statusText += ` on ${checkedInAt}`;
+                            console.error('Date parse error:', e);
+                            checkinTimeHtml = `<span class="checkin-time"><i class="fas fa-clock"></i> ${checkedInAt}</span>`;
                         }
+                    } else {
+                        // إذا ما في وقت، استخدم الوقت الحالي
+                        const now = new Date();
+                        const options = {
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: true,
+                            timeZone: 'Asia/Beirut'
+                        };
+                        const formattedDate = now.toLocaleString('en-US', options);
+                        checkinTimeHtml = `<span class="checkin-time"><i class="fas fa-clock"></i> ${formattedDate}</span>`;
                     }
                 } else if (status === 'cancelled') {
                     statusClass = 'cancelled';
@@ -918,24 +1080,25 @@
                     statusText = '⏳ Registered';
                 }
                 
-                badgeHtml = `<span class="status-badge-sm ${statusClass}">${statusText}</span>`;
-                
                 return `
                     <div class="attendee-item">
-                        <div>
+                        <div class="user-info">
                             <span class="name">${escapeHtml(user.name || 'Unknown')}</span>
-                            <div class="email">${escapeHtml(user.email || 'No email')}</div>
+                            <span class="email">${escapeHtml(user.email || 'No email')}</span>
                         </div>
-                        ${badgeHtml}
+                        <div class="status-info">
+                            <span class="status-badge-sm ${statusClass}">${statusText}</span>
+                            ${checkinTimeHtml}
+                        </div>
                     </div>
                 `;
             }).join('');
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error loading attendees:', error);
         document.getElementById('viewAttendeesList').innerHTML = `
             <div class="text-center py-3 text-danger">
-                <i class="fas fa-exclamation-circle"></i> Error loading attendees
+                <i class="fas fa-exclamation-circle"></i> Error loading attendees: ${error.message}
             </div>
         `;
     }
@@ -1357,6 +1520,7 @@
 
     document.getElementById('replyMessageForm')?.addEventListener('submit', sendReply);
 
+    // ============ EXPOSE FUNCTIONS TO GLOBAL SCOPE ============
     window.filterEvents = filterEvents;
     window.loadAllMessages = loadAllMessages;
     window.openReplyModal = openReplyModal;
@@ -1364,6 +1528,9 @@
     window.openQRScanner = openQRScanner;
     window.closeQRScanner = closeQRScanner;
     window.viewEventDetails = viewEventDetails;
+    window.refreshCounts = refreshCounts;
+    window.updateRegistrationsCounts = updateRegistrationsCounts;
+    window.loadAttendeesWithStatus = loadAttendeesWithStatus;
 </script>
 </body>
 </html>

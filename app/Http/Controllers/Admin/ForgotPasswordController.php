@@ -40,7 +40,7 @@ class ForgotPasswordController extends Controller
         
         $resetLink = route('admin.password.reset', ['token' => $token, 'email' => $request->email]);
         
-        Mail::send('emails.admin-reset-password', ['resetLink' => $resetLink], function($message) use($request) {
+       Mail::send('admin.auth-reset-password', ['resetLink' => $resetLink], function($message) use($request) {
             $message->to($request->email);
             $message->subject('Reset Your Admin Password - EventHub');
         });
